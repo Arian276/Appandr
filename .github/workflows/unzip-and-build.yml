@@ -71,6 +71,12 @@ jobs:
           curl -sLo tools/guardrails.jar https://example.com/guardrails.jar # Reemplazá con tu fuente real
           java -jar tools/guardrails.jar decoded_apk | head -n11 || echo "⚠️ Guardrails no detectados"
 
+      - name: Instalar apkx
+        run: pip install apkx
+
+      - name: Run APKX STATIC ANALYSIS
+        run: python3 tools/apkx_static_analysis/run_apkx_static_analysis.py
+
       - name: Subir APK generado
         uses: actions/upload-artifact@v4
         with:
