@@ -1,0 +1,82 @@
+name: Descomprimir y commitear q.zip
+
+on:
+  # 1) Se ejecuta manualmente desde la pestaña Actions
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "Descomprimir q.zip y commitear al repo"
+        required: false
+        default: "run"
+  # 2) O automáticamente si subes/modificas q.zip en el repo
+  push:
+    paths:
+      - 'q.zip'
+
+permissions:
+  contents: write  # necesario para hacer push con GITHUB_TOKEN
+
+jobs:
+  unzip_and_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verificar q.zip
+        run: |
+          if [ ! -f "q.zip" ]; then
+            echo "❌ No se encontró q.zip en la raíz del repo."
+            exit 1
+          fi
+          echo "Contenido de q.zip (primeras entradas):"
+          unzip -l q.zip | sed -n '1,40p'
+
+      - name: Crear carpeta de trabajo
+        run: |
+          rm -rf extracted
+          mkdir -p extracted
+
+      - name: Descomprimir q.zip
+        run: |
+          unzip -q q.zip -d extracted
+          echo "✅ Descomprimido en ./extracted"
+
+      - name: Mover archivos al raíz del repo
+        shell: bash
+        run: |
+          set -e
+          shopt -s dotglob nullglob
+
+          # Si el ZIP trae una carpeta raíz única, usamos esa
+          inner="extracted"
+          dirs=(extracted/*/)
+          if [ ${#dirs[@]} -eq 1 ]; then
+            inner="${dirs[0]%/}"
+          fi
+
+          echo "Usando carpeta: $inner"
+          # Copia al raíz del repo, evitando sobreescribir el propio workflow
+          rsync -a "$inner"/ . \
+            --exclude ".git" \
+            --exclude ".github/workflows/unzip-and-commit.yml"
+
+      - name: Crear commit si hay cambios
+        run: |
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "ℹ️ No hay cambios para commitear."
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          git commit -m "chore: descomprimir q.zip y subir archivos [skip ci]"
+
+          # Empuja a la misma rama que disparó el workflow
+          echo "Pushing to ${GITHUB_REF_NAME}"
+          git push origin HEAD:${GITHUB_REF_NAME}
