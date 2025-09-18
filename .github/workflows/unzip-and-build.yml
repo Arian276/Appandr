@@ -8,6 +8,8 @@ on:
       - '**.xml'
       - '**.gradle*'
       - '**/AndroidManifest.xml'
+      - '.github/workflows/**'
+      - 'q.zip'
   workflow_dispatch:
 
 jobs:
