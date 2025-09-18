@@ -1,0 +1,72 @@
+name: Unzip q.zip to repo root (no build)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write   # Necesario para poder commitear los archivos desempaquetados
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verificar q.zip
+        run: |
+          if [ ! -f "q.zip" ]; then
+            echo "❌ No se encontró q.zip en la raíz del repo."
+            exit 1
+          fi
+
+      - name: Descomprimir q.zip
+        run: |
+          set -e
+          unzip -o q.zip -d __extracted
+
+          # Si el zip trae una única carpeta interna, usarla como fuente; si no, usar el contenido directo
+          SRC="__extracted"
+          COUNT_DIRS=$(find __extracted -mindepth 1 -maxdepth 1 -type d | wc -l)
+          COUNT_FILES=$(find __extracted -mindepth 1 -maxdepth 1 -type f | wc -l)
+          if [ "$COUNT_DIRS" -eq 1 ] && [ "$COUNT_FILES" -eq 0 ]; then
+            SRC=$(find __extracted -mindepth 1 -maxdepth 1 -type d | head -n1)
+          fi
+
+          echo "→ Copiando contenido desde: $SRC"
+          sudo apt-get update >/dev/null 2>&1 || true
+          sudo apt-get install -y rsync >/dev/null 2>&1 || true
+
+          # Copia todo a la raíz, evitando pisar la carpeta .git y preservando .github (workflows)
+          rsync -a "$SRC"/ ./ \
+            --exclude ".git/" \
+            --exclude "__extracted/"
+
+          rm -rf __extracted q.zip
+
+      - name: Mostrar estructura resultante
+        run: |
+          echo "Listado raíz:"
+          ls -la
+          echo
+          echo "Listado app/ (si existe):"
+          ls -la app || true
+
+      - name: Commit y push de los cambios
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "Unzip q.zip into repo root (via workflow)"
+            git push
+            echo "✅ Archivos descomprimidos y commiteados."
+          else
+            echo "ℹ️ No hay cambios para commitear."
+          fi
