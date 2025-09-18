@@ -74,20 +74,20 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug --stacktrace
 
-      - name: Diagnóstico: listar APKs
+      - name: "Diagnóstico: badging del APK"
         run: |
-          echo "📦 Buscando archivos .apk en todo el proyecto..."
-          find . -type f -name "*.apk" -exec ls -lh {} \; || echo "❌ No se encontró ningún APK"
+          echo "📦 Buscando badging information del APK"
+          find . -type f -name "*.apk" -exec aapt dump badging {} \; || echo "❌ No se pudo extraer badging"
 
       - name: List build outputs (debug)
         if: always()
         run: |
-          echo "📂 Archivos en build/:"
-          find . -type f -path "*/build/*" -maxdepth 6 -printf "%P\n" | sed 's/^/ - /' || true
+          echo "📂 Archivos en ./build"
+          find . -type f -path "./build/**" -name "*.apk" || echo "❌ No se encontraron APKs en ./build"
 
-      - name: Upload APK
+      - name: Upload build outputs
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: debug-apk
+          path: ./app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
