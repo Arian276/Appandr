@@ -20,15 +20,15 @@ jobs:
           unzip -o q.zip -d extracted
           echo "📁 Después de unzip:"
           (cd extracted && find . -maxdepth 3 -print)
-          
-          # 1) Detectar carpeta que contenga un settings.gradle(.kts) o gradlew
+
+          # Detectar carpeta con settings.gradle(.kts) o gradlew
           CANDIDATE=$(find extracted -maxdepth 3 -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" -o -name "gradlew" \) -printf '%h\n' | head -n1 || true)
           if [ -z "${CANDIDATE:-}" ]; then
             echo "❌ No encontré settings.gradle(.kts) ni gradlew dentro del ZIP."
             exit 1
           fi
           echo "↪️ Proyecto detectado en: $CANDIDATE"
-          
+
           shopt -s dotglob
           mv "$CANDIDATE"/* .
           rm -rf extracted q.zip
@@ -66,7 +66,7 @@ jobs:
             exit 1
           fi
           if [ ! -f gradle/wrapper/gradle-wrapper.properties ]; then
-            echo "❌ Falta gradle-wrapper.properties"
+            echo "❌ Falta gradle/wrapper/gradle-wrapper.properties"
             exit 1
           fi
           chmod +x gradlew
@@ -74,8 +74,15 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug --stacktrace
 
+      - name: List build outputs (debug)
+        if: always()
+        run: |
+          echo "📂 Buscando salidas en build/:"
+          find . -type f -path "*/build/*" -maxdepth 6 -printf "%P\n" | sed 's/^/ - /' || true
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: '**/*.apk'
+          if-no-files-found: warn
