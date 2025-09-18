@@ -11,32 +11,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Unzip q.zip (and flatten)
+      - name: Unzip q.zip (auto-detect root)
         shell: bash
         run: |
-          set -e
-          test -f q.zip || { echo "❌ No se encontró q.zip en la raíz del repo"; exit 1; }
+          set -euo pipefail
+          test -f q.zip || { echo "❌ No está q.zip en la raíz"; exit 1; }
           rm -rf extracted
           unzip -o q.zip -d extracted
-          echo "📁 Contenido después de unzip:"
-          (cd extracted && find . -maxdepth 2 -type f -printf "%p\n" || true)
-
-          shopt -s dotglob
-          INNER=$(find extracted -mindepth 1 -maxdepth 1 -type d -print -quit || true)
-          if [ -n "$INNER" ]; then
-            echo "↪️ Detectada carpeta interna: $INNER → moviendo contenido a la raíz"
-            mv "$INNER"/* .
-          else
-            echo "↪️ Sin carpeta interna → moviendo contenido directo"
-            mv extracted/* .
+          echo "📁 Después de unzip:"
+          (cd extracted && find . -maxdepth 3 -print)
+          
+          # 1) Detectar carpeta que contenga un settings.gradle(.kts) o gradlew
+          CANDIDATE=$(find extracted -maxdepth 3 -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" -o -name "gradlew" \) -printf '%h\n' | head -n1 || true)
+          if [ -z "${CANDIDATE:-}" ]; then
+            echo "❌ No encontré settings.gradle(.kts) ni gradlew dentro del ZIP."
+            exit 1
           fi
+          echo "↪️ Proyecto detectado en: $CANDIDATE"
+          
+          shopt -s dotglob
+          mv "$CANDIDATE"/* .
           rm -rf extracted q.zip
 
-          echo "📦 Estructura en la raíz luego del movimiento:"
+          echo "📦 Raíz tras mover:"
           ls -la
-          echo "📦 Estructura de app/:"
+          echo "📦 app/:"
           ls -la app || true
-          echo "📦 Wrapper:"
+          echo "📦 gradle/wrapper:"
           ls -la gradle/wrapper || true
 
       - name: Set up JDK 17
@@ -48,15 +49,27 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Check gradle wrapper exists
+      - name: Ensure Gradle wrapper exists and is valid
+        shell: bash
         run: |
-          test -f gradlew && test -f gradle/wrapper/gradle-wrapper.jar && test -f gradle/wrapper/gradle-wrapper.properties || {
-            echo "❌ Falta el wrapper (gradlew o gradle/wrapper/*). Asegurate de que vengan en q.zip en la RAÍZ del proyecto."
+          set -e
+          if [ ! -f gradlew ]; then
+            echo "❌ Falta gradlew en la raíz."
             exit 1
-          }
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
+          fi
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "❌ Falta gradle/wrapper/gradle-wrapper.jar"
+            exit 1
+          fi
+          if [ ! -s gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "❌ gradle-wrapper.jar pesa 0 bytes. Reemplazalo por uno válido en tu ZIP."
+            exit 1
+          fi
+          if [ ! -f gradle/wrapper/gradle-wrapper.properties ]; then
+            echo "❌ Falta gradle-wrapper.properties"
+            exit 1
+          fi
+          chmod +x gradlew
 
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug --stacktrace
