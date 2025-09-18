@@ -1,72 +1,43 @@
-name: Unzip q.zip to repo root (no build)
+name: Unzip project
 
 on:
   workflow_dispatch: {}
-  push:
-    branches: [ main ]
 
 permissions:
-  contents: write   # Necesario para poder commitear los archivos desempaquetados
+  contents: write
 
 jobs:
   unzip:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Verificar q.zip
+      - name: Buscar ZIP
         run: |
-          if [ ! -f "q.zip" ]; then
-            echo "❌ No se encontró q.zip en la raíz del repo."
+          ZIPFILE=$(ls *.zip 2>/dev/null || true)
+          if [ -z "$ZIPFILE" ]; then
+            echo "❌ No se encontró ningún .zip en la raíz del repo"
             exit 1
           fi
+          echo "ZIPFILE=$ZIPFILE" >> $GITHUB_ENV
+          echo "Encontrado: $ZIPFILE"
 
-      - name: Descomprimir q.zip
+      - name: Descomprimir
         run: |
-          set -e
-          unzip -o q.zip -d __extracted
+          unzip -o "$ZIPFILE" -d __extracted
+          rsync -a __extracted/ ./ --exclude ".git/" --exclude "__extracted/"
+          rm -rf __extracted "$ZIPFILE"
 
-          # Si el zip trae una única carpeta interna, usarla como fuente; si no, usar el contenido directo
-          SRC="__extracted"
-          COUNT_DIRS=$(find __extracted -mindepth 1 -maxdepth 1 -type d | wc -l)
-          COUNT_FILES=$(find __extracted -mindepth 1 -maxdepth 1 -type f | wc -l)
-          if [ "$COUNT_DIRS" -eq 1 ] && [ "$COUNT_FILES" -eq 0 ]; then
-            SRC=$(find __extracted -mindepth 1 -maxdepth 1 -type d | head -n1)
-          fi
-
-          echo "→ Copiando contenido desde: $SRC"
-          sudo apt-get update >/dev/null 2>&1 || true
-          sudo apt-get install -y rsync >/dev/null 2>&1 || true
-
-          # Copia todo a la raíz, evitando pisar la carpeta .git y preservando .github (workflows)
-          rsync -a "$SRC"/ ./ \
-            --exclude ".git/" \
-            --exclude "__extracted/"
-
-          rm -rf __extracted q.zip
-
-      - name: Mostrar estructura resultante
+      - name: Commit descompresión
         run: |
-          echo "Listado raíz:"
-          ls -la
-          echo
-          echo "Listado app/ (si existe):"
-          ls -la app || true
-
-      - name: Commit y push de los cambios
-        run: |
-          set -e
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
-            git commit -m "Unzip q.zip into repo root (via workflow)"
+            git commit -m "Descomprimir $ZIPFILE en raíz del repo"
             git push
-            echo "✅ Archivos descomprimidos y commiteados."
           else
-            echo "ℹ️ No hay cambios para commitear."
+            echo "ℹ️ Nada que commitear"
           fi
