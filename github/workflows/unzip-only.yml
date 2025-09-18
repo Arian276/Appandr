@@ -1,7 +1,9 @@
 name: Unzip project
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: {}        # botón "Run workflow"
+  push:                        # también si haces cualquier commit/push
+    branches: [ main, master, principal ]
 
 permissions:
   contents: write
@@ -14,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Buscar ZIP
+      - name: Buscar ZIP en raíz
         run: |
           ZIPFILE=$(ls *.zip 2>/dev/null || true)
           if [ -z "$ZIPFILE" ]; then
@@ -24,19 +26,19 @@ jobs:
           echo "ZIPFILE=$ZIPFILE" >> $GITHUB_ENV
           echo "Encontrado: $ZIPFILE"
 
-      - name: Descomprimir
+      - name: Descomprimir y copiar
         run: |
           unzip -o "$ZIPFILE" -d __extracted
-          rsync -a __extracted/ ./ --exclude ".git/" --exclude "__extracted/"
+          rsync -a __extracted/ ./ --exclude ".git/" --exclude "__extracted/" --exclude ".github/"
           rm -rf __extracted "$ZIPFILE"
 
-      - name: Commit descompresión
+      - name: Commit y push
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
-            git commit -m "Descomprimir $ZIPFILE en raíz del repo"
+            git commit -m "Unzip $ZIPFILE en raíz"
             git push
           else
             echo "ℹ️ Nada que commitear"
