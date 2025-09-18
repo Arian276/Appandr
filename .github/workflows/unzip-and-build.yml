@@ -1,30 +1,59 @@
 name: Build Android APK
-
 on:
   push:
-    branches:
-      - main   # 🔴 se ejecuta al hacer push en la rama main
-  workflow_dispatch: # 🔴 también lo podés lanzar manualmente desde la pestaña "Actions"
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Unzip q.zip
-        run: unzip -o q.zip -d .
+      - name: Unzip q.zip (and flatten)
+        shell: bash
+        run: |
+          set -e
+          test -f q.zip || { echo "❌ No se encontró q.zip en la raíz del repo"; exit 1; }
+          rm -rf extracted
+          unzip -o q.zip -d extracted
+          echo "📁 Contenido después de unzip:"
+          (cd extracted && find . -maxdepth 2 -type f -printf "%p\n" || true)
+
+          shopt -s dotglob
+          INNER=$(find extracted -mindepth 1 -maxdepth 1 -type d -print -quit || true)
+          if [ -n "$INNER" ]; then
+            echo "↪️ Detectada carpeta interna: $INNER → moviendo contenido a la raíz"
+            mv "$INNER"/* .
+          else
+            echo "↪️ Sin carpeta interna → moviendo contenido directo"
+            mv extracted/* .
+          fi
+          rm -rf extracted q.zip
+
+          echo "📦 Estructura en la raíz luego del movimiento:"
+          ls -la
+          echo "📦 Estructura de app/:"
+          ls -la app || true
+          echo "📦 Wrapper:"
+          ls -la gradle/wrapper || true
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: 17
+          distribution: temurin
+          java-version: '17'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Check gradle wrapper exists
+        run: |
+          test -f gradlew && test -f gradle/wrapper/gradle-wrapper.jar && test -f gradle/wrapper/gradle-wrapper.properties || {
+            echo "❌ Falta el wrapper (gradlew o gradle/wrapper/*). Asegurate de que vengan en q.zip en la RAÍZ del proyecto."
+            exit 1
+          }
 
       - name: Make gradlew executable
         run: chmod +x gradlew
