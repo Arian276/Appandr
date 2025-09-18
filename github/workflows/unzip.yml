@@ -1,0 +1,33 @@
+name: Unzip and Build
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Unzip project
+        run: unzip TSPlayerNative_Android_Project.zip -d extracted
+
+      - name: Move files
+        run: |
+          mv extracted/* ./
+          rm TSPlayerNative_Android_Project.zip
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build
+        run: ./gradlew assembleDebug || gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
