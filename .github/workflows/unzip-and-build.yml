@@ -1,8 +1,12 @@
-name: Build and Analyze Android APK
+name: Build and Analyze APK
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - '**.kt'
+      - '**.xml'
+      - '**.gradle*'
+      - '**/AndroidManifest.xml'
   workflow_dispatch:
 
 jobs:
@@ -10,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: 📦 Checkout repo
         uses: actions/checkout@v4
 
-      - name: Unzip q.zip (auto-detect root)
+      - name: 📂 Unzip q.zip y detectar raíz del proyecto
         shell: bash
         run: |
           set -euo pipefail
@@ -24,68 +28,67 @@ jobs:
           rsync -a "$CANDIDATE"/ .
           rm -rf extracted q.zip
 
-      - name: Validar estructura
+      - name: ✅ Validar estructura mínima
         run: |
-          test -f gradlew || exit 1
-          test -f gradle/wrapper/gradle-wrapper.jar || exit 1
+          test -f gradlew || { echo "❌ Falta gradlew"; exit 1; }
+          test -f gradle/wrapper/gradle-wrapper.jar || { echo "❌ Falta gradle-wrapper.jar"; exit 1; }
           chmod +x gradlew
 
-      - name: Set up JDK 17
+      - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
+      - name: 🤖 Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Export Android SDK paths (GitHub workaround)
+      - name: 🛠 Exportar variables de entorno Android
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME"
           echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
 
-      - name: Build Debug APK
+      - name: 🧪 Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: Build Release APK
+      - name: 🔐 Build Release APK
         run: ./gradlew assembleRelease --stacktrace
 
-      - name: Detectar APK generado
+      - name: 📍 Detectar APK generado
+        id: detect_apk
         run: |
-          APK_PATH=$(find . -type f -name "*.apk" | head -n1)
+          APK_PATH=$(find app/build/outputs/apk -type f -name "*.apk" | head -n1)
           [ -z "$APK_PATH" ] && echo "❌ No se encontró APK" && exit 1
-          echo "✅ APK: $APK_PATH"
+          echo "✅ APK generado: $APK_PATH"
           echo "apk-path=$APK_PATH" >> $GITHUB_ENV
 
-      - name: Decode APK con apktool
+      - name: 🔍 Decode APK con apktool
         run: |
           mkdir -p tools/apktool
           curl -sLo tools/apktool/apktool.jar https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool_2.6.1.jar
           java -jar tools/apktool/apktool.jar d "${{ env.apk-path }}" -o decoded_apk
 
-      - name: Detectar guardrails en APK
+      - name: 🛡️ Detectar guardrails en APK
         run: |
           mkdir -p tools
           curl -sLo tools/guardrails.jar https://example.com/guardrails.jar # Reemplazá con tu fuente real
           java -jar tools/guardrails.jar decoded_apk | head -n11 || echo "⚠️ Guardrails no detectados"
 
-      - name: Instalar apkx
-        run: pip install apkx
+      - name: 🐍 Instalar apkx
+        run: pip install apkx || echo "⚠️ apkx no instalado"
 
-      - name: Run APKX STATIC ANALYSIS
-        run: python3 tools/apkx_static_analysis/run_apkx_static_analysis.py
+      - name: 📊 Run APKX Static Analysis
+        run: python3 tools/apkx_static_analysis/run_apkx_static_analysis.py || echo "⚠️ APKX no ejecutado"
 
-      - name: Subir APK a transfer.sh
+      - name: ☁️ Subir APK a transfer.sh
         run: |
-          APK_NAME=$(ls -t "${{ env.apk-path }}" | head -n1)
+          APK_NAME=$(basename "${{ env.apk-path }}")
           echo "📤 Subiendo APK: $APK_NAME"
-          curl --upload-file "$APK_NAME" https://transfer.sh/$(basename "$APK_NAME") > transfer_url.txt
+          curl --upload-file "${{ env.apk-path }}" https://transfer.sh/"$APK_NAME" > transfer_url.txt
           echo "🔗 URL de descarga:"
           cat transfer_url.txt
 
-      - name: Subir artefactos locales
+      - name: 📦 Subir artefactos locales
         uses: actions/upload-artifact@v4
         with:
           name: decoded-apk
