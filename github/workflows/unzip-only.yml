@@ -1,9 +1,9 @@
 name: Unzip project
 
 on:
-  workflow_dispatch: {}        # botón "Run workflow"
-  push:                        # también si haces cualquier commit/push
-    branches: [ main, master, principal ]
+  workflow_dispatch: {}
+  push:
+    branches: [ principal, main, master ]
 
 permissions:
   contents: write
