@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build and Analyze Android APK
 
 on:
   push:
@@ -13,43 +13,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verificar ubicación de q.zip
-        run: |
-          echo "📦 Archivos en la raíz:"
-          ls -la
-
       - name: Unzip q.zip (auto-detect root)
         shell: bash
         run: |
           set -euo pipefail
           test -f q.zip || { echo "❌ No está q.zip en la raíz"; exit 1; }
-          rm -rf extracted
           unzip -o q.zip -d extracted
-          echo "📁 Después de unzip:"
-          (cd extracted && tree -L 3 || true)
-
-          CANDIDATE=$(find extracted -maxdepth 3 -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" -o -name "gradlew" \) -printf '%h\n' | head -n1 || true)
-          if [ -z "${CANDIDATE:-}" ]; then
-            echo "❌ No encontré settings.gradle(.kts) ni gradlew dentro del ZIP."
-            exit 1
-          fi
-          echo "↪️ Proyecto detectado en: $CANDIDATE"
-
-          shopt -s dotglob
+          CANDIDATE=$(find extracted -maxdepth 3 -type f \( -name "settings.gradle" -o -name "gradlew" \) -printf '%h\n' | head -n1 || true)
+          [ -z "$CANDIDATE" ] && echo "❌ No se detectó proyecto válido" && exit 1
           rsync -a "$CANDIDATE"/ .
           rm -rf extracted q.zip
 
-          echo "📦 Raíz tras mover:"
-          ls -la
-          echo "📦 gradle/wrapper:"
-          ls -la gradle/wrapper || true
-
-      - name: Validar estructura del proyecto
+      - name: Validar estructura
         run: |
-          test -f settings.gradle.kts || test -f settings.gradle || { echo "❌ Falta settings.gradle"; exit 1; }
-          test -f gradlew || { echo "❌ Falta gradlew"; exit 1; }
-          test -f gradle/wrapper/gradle-wrapper.jar || { echo "❌ Falta gradle-wrapper.jar"; exit 1; }
-          test -f gradle/wrapper/gradle-wrapper.properties || { echo "❌ Falta gradle-wrapper.properties"; exit 1; }
+          test -f gradlew || exit 1
+          test -f gradle/wrapper/gradle-wrapper.jar || exit 1
           chmod +x gradlew
 
       - name: Set up JDK 17
@@ -61,28 +39,47 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Export Android SDK paths (GitHub workaround)
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: "Diagnóstico: badging del APK"
-        run: |
-          echo "📦 Buscando badging del APK"
-          find . -type f -name "*.apk" -exec aapt dump badging {} \; || echo "❌ No se pudo extraer badging"
+      - name: Build Release APK
+        run: ./gradlew assembleRelease --stacktrace
 
-      - name: Detectar y guardar ruta del APK
+      - name: Detectar APK generado
         run: |
-          echo "📦 Detectando APK generado..."
           APK_PATH=$(find . -type f -name "*.apk" | head -n1)
-          if [ -z "$APK_PATH" ]; then
-            echo "❌ No se encontró ningún APK"
-            exit 1
-          fi
-          echo "✅ APK encontrado en: $APK_PATH"
+          [ -z "$APK_PATH" ] && echo "❌ No se encontró APK" && exit 1
+          echo "✅ APK: $APK_PATH"
           echo "apk-path=$APK_PATH" >> $GITHUB_ENV
 
-      - name: Subir APK detectado
+      - name: Decode APK con apktool
+        run: |
+          mkdir -p tools/apktool
+          curl -sLo tools/apktool/apktool.jar https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool_2.6.1.jar
+          java -jar tools/apktool/apktool.jar d "${{ env.apk-path }}" -o decoded_apk
+
+      - name: Detectar guardrails en APK
+        run: |
+          mkdir -p tools
+          curl -sLo tools/guardrails.jar https://example.com/guardrails.jar # Reemplazá con tu fuente real
+          java -jar tools/guardrails.jar decoded_apk | head -n11 || echo "⚠️ Guardrails no detectados"
+
+      - name: Subir APK generado
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: ${{ env['apk-path'] }}
+          name: apk-generado
+          path: ${{ env.apk-path }}
           if-no-files-found: error
+
+      - name: Subir APK decodificado
+        uses: actions/upload-artifact@v4
+        with:
+          name: decoded-apk
+          path: decoded_apk/
