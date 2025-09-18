@@ -77,14 +77,15 @@ jobs:
       - name: Run APKX STATIC ANALYSIS
         run: python3 tools/apkx_static_analysis/run_apkx_static_analysis.py
 
-      - name: Subir APK generado
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk-generado
-          path: ${{ env.apk-path }}
-          if-no-files-found: error
+      - name: Subir APK a transfer.sh
+        run: |
+          APK_NAME=$(ls -t "${{ env.apk-path }}" | head -n1)
+          echo "📤 Subiendo APK: $APK_NAME"
+          curl --upload-file "$APK_NAME" https://transfer.sh/$(basename "$APK_NAME") > transfer_url.txt
+          echo "🔗 URL de descarga:"
+          cat transfer_url.txt
 
-      - name: Subir APK decodificado
+      - name: Subir artefactos locales
         uses: actions/upload-artifact@v4
         with:
           name: decoded-apk
