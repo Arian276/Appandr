@@ -41,16 +41,16 @@ jobs:
 
           echo "📦 Raíz tras mover:"
           ls -la
-          echo "📦 app/:"
-          ls -la app || true
           echo "📦 gradle/wrapper:"
           ls -la gradle/wrapper || true
 
       - name: Validar estructura del proyecto
         run: |
           test -f settings.gradle.kts || test -f settings.gradle || { echo "❌ Falta settings.gradle"; exit 1; }
-          test -f app/build.gradle.kts || test -f app/build.gradle || { echo "❌ Falta build.gradle en app"; exit 1; }
-          test -f app/src/main/AndroidManifest.xml || { echo "❌ Falta AndroidManifest.xml"; exit 1; }
+          test -f gradlew || { echo "❌ Falta gradlew"; exit 1; }
+          test -f gradle/wrapper/gradle-wrapper.jar || { echo "❌ Falta gradle-wrapper.jar"; exit 1; }
+          test -f gradle/wrapper/gradle-wrapper.properties || { echo "❌ Falta gradle-wrapper.properties"; exit 1; }
+          chmod +x gradlew
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -61,38 +61,28 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Validar Gradle wrapper
-        shell: bash
-        run: |
-          set -e
-          test -f gradlew || { echo "❌ Falta gradlew en la raíz."; exit 1; }
-          test -f gradle/wrapper/gradle-wrapper.jar || { echo "❌ Falta gradle-wrapper.jar"; exit 1; }
-          test -s gradle/wrapper/gradle-wrapper.jar || { echo "❌ gradle-wrapper.jar pesa 0 bytes"; exit 1; }
-          test -f gradle/wrapper/gradle-wrapper.properties || { echo "❌ Falta gradle-wrapper.properties"; exit 1; }
-          chmod +x gradlew
-
       - name: Build Debug APK
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace
 
-      - name: "Diagnóstico: badging del APK"
+      - name: Diagnóstico: badging del APK
         run: |
-          echo "📦 Buscando badging information del APK"
+          echo "📦 Buscando badging del APK"
           find . -type f -name "*.apk" -exec aapt dump badging {} \; || echo "❌ No se pudo extraer badging"
 
-      - name: "Diagnóstico: listar APKs"
+      - name: Detectar y guardar ruta del APK
         run: |
-          echo "📦 Archivos .apk encontrados:"
-          find . -type f -name "*.apk" || echo "❌ No se encontró ningún APK"
+          echo "📦 Detectando APK generado..."
+          APK_PATH=$(find . -type f -name "*.apk" | head -n1)
+          if [ -z "$APK_PATH" ]; then
+            echo "❌ No se encontró ningún APK"
+            exit 1
+          fi
+          echo "✅ APK encontrado en: $APK_PATH"
+          echo "apk-path=$APK_PATH" >> $GITHUB_ENV
 
-      - name: "List build outputs (debug)"
-        if: always()
-        run: |
-          echo "📂 Archivos en ./build"
-          find . -type f -path "./build/**" -name "*.apk" || echo "❌ No se encontraron APKs en ./build"
-
-      - name: Upload build outputs
+      - name: Subir APK detectado
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: ./app/build/outputs/apk/debug/*.apk
+          path: ${{ env.apk-path }}
           if-no-files-found: error
