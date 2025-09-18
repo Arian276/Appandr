@@ -1,0 +1,51 @@
+name: Unzip and Commit
+
+on:
+  workflow_dispatch:    # para ejecutarlo a mano
+  push:
+    paths:
+      - 'q.zip'         # también corre cuando subís q.zip
+
+permissions:
+  contents: write       # necesario para hacer push con GITHUB_TOKEN
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Instalar unzip y rsync
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip rsync
+
+      - name: Descomprimir q.zip a carpeta temporal
+        run: |
+          rm -rf _unzipped
+          mkdir -p _unzipped
+          unzip -o q.zip -d _unzipped
+
+      # Si el zip trae todo adentro de una carpeta, esto igual lo sube
+      # al raíz del repo. Excluimos .git y .github para no romper el repo/CI.
+      - name: Copiar contenido al raíz del repo
+        run: |
+          rsync -a --delete --exclude=".git" --exclude=".github" _unzipped/ ./
+
+      - name: Configurar autor de Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit (si hay cambios)
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sin cambios para commitear."
+          else
+            git commit -m "CI: descomprimir q.zip al repositorio"
+            git push
+          fi
