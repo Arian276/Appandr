@@ -85,12 +85,27 @@ jobs:
           set -euo pipefail
           ./gradlew --no-daemon --warning-mode all --info --stacktrace assembleDebug | tee build.log
 
-      - name: Mostrar causa del error
+      - name: Mostrar causa del error (últimas 200 líneas)
         if: failure()
         shell: bash
         run: |
-          echo "---- WHAT WENT WRONG (resumen) ----"
-            tail -n 200 build.log
+          echo "---- WHAT WENT WRONG (tail 200) ----"
+          tail -n 200 build.log || true
+
+      - name: Mostrar errores AAPT2 (filtrado)
+        if: failure()
+        shell: bash
+        run: |
+          echo "---- POSIBLES AAPT2 ----"
+          grep -i -E "AAPT|Android resource linking failed|error: resource|error:" build.log || true
+
+      - name: Subir log completo
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+
       - name: "Diagnóstico: badging del APK"
         if: success()
         run: |
