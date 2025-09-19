@@ -36,11 +36,12 @@ jobs:
           echo "📁 Después de unzip:"
           (cd extracted && tree -L 3 || true)
 
+          # 1) Si el ZIP trae una sola carpeta raíz, usarla como base
           ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || true)
           [ -z "${ROOT_DIR:-}" ] && ROOT_DIR="extracted"
 
+          # 2) Detectar la carpeta de proyecto (donde están settings.gradle(.kts) o gradlew)
           CANDIDATE=$(find "$ROOT_DIR" -maxdepth 3 -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" -o -name "gradlew" \) -printf '%h\n' | head -n1 || true)
-
           if [ -z "${CANDIDATE:-}" ]; then
             echo "❌ No encontré settings.gradle(.kts) ni gradlew dentro del ZIP."
             exit 1
@@ -78,15 +79,27 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Build APK
-        run: ./gradlew --no-daemon --stacktrace assembleDebug
+      - name: Build APK (verbose)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon --warning-mode all --info --stacktrace assembleDebug | tee build.log
+
+      - name: Mostrar causa del error
+        if: failure()
+        shell: bash
+        run: |
+          echo "---- WHAT WENT WRONG (resumen) ----"
+          awk '/FAILURE: Build failed with an exception./,0' build.log | sed -n '1,200p'
 
       - name: "Diagnóstico: badging del APK"
+        if: success()
         run: |
           echo "📦 Buscando badging del APK"
           find . -type f -name "*.apk" -exec aapt dump badging {} \; || echo "❌ No se pudo extraer badging"
 
       - name: Detectar y guardar ruta del APK
+        if: success()
         id: find_apk
         run: |
           echo "📦 Detectando APK generado..."
@@ -99,6 +112,7 @@ jobs:
           echo "APK_PATH=$APK_PATH" >> "$GITHUB_ENV"
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
