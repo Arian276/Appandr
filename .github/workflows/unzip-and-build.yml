@@ -90,8 +90,7 @@ jobs:
         shell: bash
         run: |
           echo "---- WHAT WENT WRONG (resumen) ----"
-          awk '/FAILURE: Build failed with an exception./,0' build.log | sed -n '1,200p'
-
+            tail -n 200 build.log
       - name: "Diagnóstico: badging del APK"
         if: success()
         run: |
