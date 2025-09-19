@@ -61,6 +61,8 @@ jobs:
           test -f gradle/wrapper/gradle-wrapper.jar || { echo "❌ Falta gradle-wrapper.jar"; exit 1; }
           test -f gradle/wrapper/gradle-wrapper.properties || { echo "❌ Falta gradle-wrapper.properties"; exit 1; }
           chmod +x gradlew
+          test -d app || { echo "❌ No existe el directorio 'app'"; exit 1; }
+          test -f app/build.gradle.kts || test -f app/build.gradle || { echo "❌ No hay build.gradle(.kts) en app/"; exit 1; }
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -76,12 +78,12 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # ---------- NUEVO: compilar solo Kotlin y mostrar errores claros ----------
+      # Compilar solo Kotlin primero (errores claros)
       - name: Compile Kotlin (focused)
         shell: bash
         run: |
           set -o pipefail
-          ./gradlew --no-daemon --stacktrace :app:compileDebugKotlin 2>&1 | tee compile.log
+          ./gradlew --no-daemon --console=plain --stacktrace :app:compileDebugKotlin 2>&1 | tee compile.log
           EXIT=${PIPESTATUS[0]}
           echo "---- ERRORES (líneas 'e:') ----"
           grep -n "^e: " compile.log || true
@@ -89,13 +91,13 @@ jobs:
           tail -n 120 compile.log || true
           exit $EXIT
 
-      # Si pasó Kotlin, recién ahí armamos el APK completo (verbose)
+      # Si pasó Kotlin, construir el APK del módulo :app
       - name: Build APK (verbose)
         if: success()
         shell: bash
         run: |
           set -o pipefail
-          ./gradlew --no-daemon --warning-mode all --info --stacktrace assembleDebug 2>&1 | tee build.log
+          ./gradlew --no-daemon --console=plain --warning-mode all --info --stacktrace :app:assembleDebug 2>&1 | tee build.log
 
       - name: Mostrar causa del error (últimas 200 líneas)
         if: failure()
@@ -125,16 +127,16 @@ jobs:
         if: success()
         run: |
           echo "📦 Buscando badging del APK"
-          find . -type f -name "*.apk" -exec aapt dump badging {} \; || echo "❌ No se pudo extraer badging"
+          find app -type f -name "*.apk" -exec aapt dump badging {} \; || echo "❌ No se pudo extraer badging"
 
       - name: Detectar y guardar ruta del APK
         if: success()
         id: find_apk
         run: |
           echo "📦 Detectando APK generado..."
-          APK_PATH=$(find . -type f -name "*.apk" | head -n1)
+          APK_PATH=$(find app -type f -name "*.apk" | head -n1)
           if [ -z "$APK_PATH" ]; then
-            echo "❌ No se encontró ningún APK"
+            echo "❌ No se encontró ningún APK dentro de app/"
             exit 1
           fi
           echo "✅ APK encontrado en: $APK_PATH"
