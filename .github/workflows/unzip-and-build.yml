@@ -25,28 +25,28 @@ jobs:
           echo "📦 Archivos en la raíz:"
           ls -la
 
-      - name: Unzip q.zip y dejar proyecto en la raíz
+      - name: Unzip q.zip (auto-detect root)
         shell: bash
         run: |
           set -euo pipefail
           test -f q.zip || { echo "❌ No está q.zip en la raíz"; exit 1; }
-
           rm -rf extracted
           unzip -o q.zip -d extracted
-
           echo "📁 Después de unzip:"
-          (cd extracted && find . -maxdepth 3 -type f | sed 's|^\./||' | head -n 200 || true)
+          (cd extracted && tree -L 3 || true)
 
-          # Detectar carpeta que contiene gradlew o settings.gradle(.kts)
-          ROOT_DIR=$(find extracted -maxdepth 3 -type f \( -name "gradlew" -o -name "settings.gradle" -o -name "settings.gradle.kts" \) -printf '%h\n' | head -n1 || true)
-          if [ -z "${ROOT_DIR:-}" ]; then
-            echo "❌ No encontré gradlew ni settings.gradle dentro del ZIP."
+          ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || true)
+          [ -z "${ROOT_DIR:-}" ] && ROOT_DIR="extracted"
+
+          CANDIDATE=$(find "$ROOT_DIR" -maxdepth 3 -type f \( -name "settings.gradle" -o -name "settings.gradle.kts" -o -name "gradlew" \) -printf '%h\n' | head -n1 || true)
+          if [ -z "${CANDIDATE:-}" ]; then
+            echo "❌ No encontré settings.gradle(.kts) ni gradlew dentro del ZIP."
             exit 1
           fi
-          echo "↪️ Proyecto detectado en: $ROOT_DIR"
+          echo "↪️ Proyecto detectado en: $CANDIDATE"
 
           shopt -s dotglob
-          rsync -a "$ROOT_DIR"/ .
+          rsync -a "$CANDIDATE"/ .
           rm -rf extracted q.zip
 
           echo "📦 Raíz tras mover:"
@@ -61,9 +61,6 @@ jobs:
           test -f gradle/wrapper/gradle-wrapper.jar || { echo "❌ Falta gradle-wrapper.jar"; exit 1; }
           test -f gradle/wrapper/gradle-wrapper.properties || { echo "❌ Falta gradle-wrapper.properties"; exit 1; }
           chmod +x gradlew
-          # Confirmar que existe el módulo app (donde está tu build.gradle.kts y src/)
-          test -d app || { echo "❌ No existe el directorio 'app'"; exit 1; }
-          test -f app/build.gradle.kts || test -f app/build.gradle || { echo "❌ No hay build.gradle(.kts) en app/"; exit 1; }
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -79,51 +76,50 @@ jobs:
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      # Compilar el módulo :app explícitamente (sin autodetección)
-      - name: Compile Kotlin (plain log)
+      # ---------- NUEVO: compilar solo Kotlin y mostrar errores claros ----------
+      - name: Compile Kotlin (focused)
         shell: bash
         run: |
-          set -euo pipefail
-          ./gradlew --no-daemon --stacktrace --info :app:compileDebugKotlin | tee compile.log
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace :app:compileDebugKotlin 2>&1 | tee compile.log
+          EXIT=${PIPESTATUS[0]}
+          echo "---- ERRORES (líneas 'e:') ----"
+          grep -n "^e: " compile.log || true
+          echo "---- CONTEXTO (últimas 120 líneas) ----"
+          tail -n 120 compile.log || true
+          exit $EXIT
 
-      - name: Extraer errores Kotlin
-        if: failure()
-        shell: bash
-        run: |
-          echo "---- ERRORES KOTLIN (grep 'e:' y 'error:') ----"
-          # Últimas 200 líneas y patrón de errores más comunes
-          (tail -n 200 compile.log || true)
-          echo ""
-          grep -E " e: | error: " -n compile.log || true
-
+      # Si pasó Kotlin, recién ahí armamos el APK completo (verbose)
       - name: Build APK (verbose)
+        if: success()
         shell: bash
         run: |
-          set -euo pipefail
-          ./gradlew --no-daemon --warning-mode all --info --stacktrace :app:assembleDebug | tee build.log
+          set -o pipefail
+          ./gradlew --no-daemon --warning-mode all --info --stacktrace assembleDebug 2>&1 | tee build.log
 
       - name: Mostrar causa del error (últimas 200 líneas)
         if: failure()
         shell: bash
         run: |
           echo "---- WHAT WENT WRONG (tail 200) ----"
-          tail -n 200 build.log || true
+          tail -n 200 build.log 2>/dev/null || echo "(sin build.log; revisar compile.log)"
 
       - name: Mostrar errores AAPT2 (filtrado)
         if: failure()
         shell: bash
         run: |
           echo "---- POSIBLES AAPT2 ----"
-          grep -i -E "AAPT|Android resource linking failed|error: resource|error:" build.log || true
+          grep -i -E "AAPT|Android resource linking failed|error: resource|error:" build.log 2>/dev/null || echo "(no AAPT2; probablemente error Kotlin)"
 
-      - name: Subir log completo
-        if: failure()
+      - name: Subir logs completos
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: build-log
           path: |
             compile.log
             build.log
+          if-no-files-found: warn
 
       - name: "Diagnóstico: badging del APK"
         if: success()
@@ -136,9 +132,9 @@ jobs:
         id: find_apk
         run: |
           echo "📦 Detectando APK generado..."
-          APK_PATH=$(find app -type f -name "*.apk" | head -n1)
+          APK_PATH=$(find . -type f -name "*.apk" | head -n1)
           if [ -z "$APK_PATH" ]; then
-            echo "❌ No se encontró ningún APK dentro de app/"
+            echo "❌ No se encontró ningún APK"
             exit 1
           fi
           echo "✅ APK encontrado en: $APK_PATH"
