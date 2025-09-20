@@ -1,21 +1,21 @@
-package com.sc.tvappvlc.ui // Tu nuevo paquete está bien
+package com.sc.tvappvlc.ui // Corregimos el paquete para que coincida con la carpeta
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arian.appandr.R // ¡ESTA ES LA LÍNEA MÁGICA QUE LO ARREGLA!
-import com.sc.tvappvlc.model.Channel
+import com.arian.appandr.R // Importamos R desde el paquete original de la app
+import com.sc.tvappvlc.model.Channel // Importamos la clase Channel desde su paquete
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Usamos la referencia a R que acabamos de importar
         setContentView(R.layout.activity_main)
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
+        // Volvemos a poner la lista de canales que sí funciona
         val channels = listOf(
             Channel("ESPN Premium", "Deportes", "url1"),
             Channel("TNT Sports", "Deportes", "url2"),
