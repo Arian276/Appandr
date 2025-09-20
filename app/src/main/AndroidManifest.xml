@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Necesario para cargar imágenes/JSON y reproducir streams -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="TVAppVLC"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/Theme.TVAppVLC">
+        android:theme="@style/Theme.TVAppVLC"
+        android:usesCleartextTraffic="true">  <!-- habilita http:// -->
 
-        <!-- Activity principal con intent-filter -->
+        <!-- Activity principal -->
         <activity
             android:name="com.bc.tvappvlc.ui.MainActivity"
             android:exported="true">
@@ -16,8 +20,10 @@
             </intent-filter>
         </activity>
 
-        <!-- Otras activities (no llevan exported si no tienen intent-filter) -->
-        <activity android:name="com.bc.tvappvlc.PlayerActivity" />
+        <!-- Reproductor -->
+        <activity
+            android:name="com.bc.tvappvlc.PlayerActivity"
+            android:exported="false" />
 
     </application>
 </manifest>
