@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bc_radius_small">4dp</dimen>
+    <dimen name="bc_radius">8dp</dimen> <!-- radius: 8dp -->
+    <dimen name="bc_radius_large">16dp</dimen>
+    <dimen name="bc_card_padding">12dp</dimen>
+    <dimen name="bc_grid_spacing">14dp</dimen>
+</resources>

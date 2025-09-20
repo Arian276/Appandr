@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema principal de la app -->
+    <style name="Theme.TVAppVLC" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores dinámicos (remotos o fallback de colors.xml) -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+
+        <!-- Barra de navegación -->
+        <item name="android:navigationBarColor" tools:targetApi="l">?android:colorBackground</item>
+
+        <!-- Tipografía -->
+        <item name="fontFamily">@font/inter</item>
+    </style>
+
+</resources>

@@ -1,0 +1,24 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">Barrilete Tv</string>
+    <string name="search_hint">Buscar canal</string>
+
+    <!-- Botones / acciones -->
+    <string name="watch_now">Ver ahora</string>
+    <string name="cta_watch">VER AHORA</string>
+    <string name="back">Atrás</string>
+    <string name="mute">Silencio</string>
+    <string name="unmute">Sonido</string>
+    <string name="fullscreen">Pantalla completa</string>
+    <string name="exit_fullscreen">Salir de pantalla completa</string>
+
+    <!-- Player -->
+    <string name="live">En vivo</string>
+    <string name="quality">Calidad</string>
+    <string name="audio">Audio</string>
+    <string name="subtitles">Subtítulos</string>
+    <string name="viewers">Espectadores</string>
+    <string name="channel_info">Información del Canal</string>
+    <string name="loading">Cargando…</string>
+    <string name="error_loading">Error al cargar</string>
+</resources>
