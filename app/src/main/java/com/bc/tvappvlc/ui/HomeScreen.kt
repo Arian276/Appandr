@@ -1,4 +1,4 @@
-package com.appandr.app.ui
+package com.bc.tvappvlc.ui
 
 import android.content.Context
 import androidx.compose.animation.core.animateFloatAsState
@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.appandr.app.ui.model.Channel
+import com.bc.tvappvlc.ui.model.Channel
 import org.json.JSONArray
 import java.nio.charset.Charset
 
@@ -37,15 +37,13 @@ fun HomeScreen(
     AppTheme {
         val ctx = LocalContext.current
         val t = ThemeTokens.tokens
-
         val channels by remember { mutableStateOf(loadChannels(ctx)) }
 
         Surface(
             color = Color(android.graphics.Color.parseColor(t.colors.background))
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-
-                // Header (altura exacta de tokens)
+                // Header
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -61,26 +59,7 @@ fun HomeScreen(
                     )
                 }
 
-                // Chips/Secciones (si no querés, podés ocultar este bloque)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = t.layout.grid.paddingDp.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Todos",
-                        color = Color(android.graphics.Color.parseColor(t.colors.chipText)),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(t.shape.chipRadiusDp.dp))
-                            .background(Color(android.graphics.Color.parseColor(t.colors.chipBg)))
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                    )
-                }
-
-                // Grilla responsiva (cols por orientación/tablet desde tokens)
+                // Grid responsiva
                 val cfg = LocalConfiguration.current
                 val widthDp = cfg.screenWidthDp
                 val heightDp = cfg.screenHeightDp
@@ -118,8 +97,6 @@ private fun ChannelCard(
 ) {
     val t = ThemeTokens.tokens
     val a = ThemeTokens.anims
-
-    // Animación de scale (press) + “lift” ligero por defecto
     var pressed by remember { mutableStateOf(false) }
     val targetScale = if (pressed) a.cardPress.scaleTo else a.cardHoverLift.scaleTo
     val scale by animateFloatAsState(targetValue = targetScale, label = "cardScale")
@@ -136,7 +113,6 @@ private fun ChannelCard(
             )
             .scale(scale)
     ) {
-        // Imagen principal: usa poster si hay, sino logo
         val imageUrl = channel.image.ifBlank { channel.logo }
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -148,18 +124,6 @@ private fun ChannelCard(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Borde sutil sobre la tarjeta
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(RoundedCornerShape(t.shape.cardRadiusDp.dp))
-                .background(
-                    Color(android.graphics.Color.parseColor(t.colors.cardBorder))
-                        .copy(alpha = 0.12f)
-                )
-        )
-
-        // Badge EN VIVO (con pulso por alpha)
         if (channel.live) {
             val alphaPulse by animateFloatAsState(
                 targetValue = a.liveBadgePulse.alphaTo,
@@ -185,7 +149,6 @@ private fun ChannelCard(
             }
         }
 
-        // Título (cinta inferior oscura)
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -202,8 +165,6 @@ private fun ChannelCard(
         }
     }
 }
-
-// ================= Helpers =================
 
 private fun ratioFromString(aspect: String): Float {
     val parts = aspect.split(":")
