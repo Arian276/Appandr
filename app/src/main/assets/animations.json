@@ -1,1 +1,62 @@
-
+{
+  "appBarTitleGradient": {
+    "durationMs": 4000,
+    "easing": "linear",
+    "loop": "infinite"
+  },
+  "cardHoverLift": {
+    "elevationFrom": 2,
+    "elevationTo": 6,
+    "scaleFrom": 1.0,
+    "scaleTo": 1.03,
+    "durationMs": 160,
+    "easing": "standard"
+  },
+  "cardPress": {
+    "scaleFrom": 1.0,
+    "scaleTo": 0.98,
+    "durationMs": 80,
+    "easing": "fastOut"
+  },
+  "liveBadgePulse": {
+    "alphaFrom": 0.9,
+    "alphaTo": 1.0,
+    "durationMs": 900,
+    "easing": "easeInOut",
+    "loop": "yoyo"
+  },
+  "chipsUnderlineSlide": {
+    "durationMs": 200,
+    "easing": "standard"
+  },
+  "bannerParallax": {
+    "shiftPx": 24,
+    "durationMs": 6000,
+    "easing": "linear",
+    "loop": "infinite"
+  },
+  "skeletonShimmer": {
+    "durationMs": 1200,
+    "angleDeg": 20,
+    "intensity": 0.35
+  },
+  "listEnter": {
+    "staggerMs": 40,
+    "offsetY": 10,
+    "alphaFrom": 0.0,
+    "durationMs": 220,
+    "easing": "standard"
+  },
+  "buttonHover": {
+    "scaleFrom": 1.0,
+    "scaleTo": 1.05,
+    "durationMs": 120,
+    "easing": "easeOut"
+  },
+  "buttonPress": {
+    "scaleFrom": 1.0,
+    "scaleTo": 0.96,
+    "durationMs": 80,
+    "easing": "fastOut"
+  }
+}
