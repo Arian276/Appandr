@@ -1,4 +1,4 @@
-package com.arian.appandr
+package com.bc.tvappvlc.model
 
 // Añadimos el campo "category"
 data class Channel(
