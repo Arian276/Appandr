@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Necesario para cargar imágenes/JSON y reproducir streams -->
+    <!-- Permiso necesario para reproducir streams e imágenes -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:label="TVAppVLC"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.TVAppVLC"
-        android:usesCleartextTraffic="true">  <!-- habilita http:// -->
+        android:usesCleartextTraffic="true">
 
         <!-- Activity principal -->
         <activity
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Reproductor -->
+        <!-- Activity para el reproductor -->
         <activity
             android:name="com.bc.tvappvlc.PlayerActivity"
             android:exported="false" />
