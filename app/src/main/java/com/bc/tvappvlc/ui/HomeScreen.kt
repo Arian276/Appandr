@@ -1,9 +1,7 @@
 package com.appandr.app.ui
 
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +9,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +28,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.appandr.app.ui.model.Channel
 import org.json.JSONArray
-import org.json.JSONObject
 import java.nio.charset.Charset
 
 @Composable
@@ -41,17 +37,15 @@ fun HomeScreen(
     AppTheme {
         val ctx = LocalContext.current
         val t = ThemeTokens.tokens
-        val a = ThemeTokens.anims
 
         val channels by remember { mutableStateOf(loadChannels(ctx)) }
 
         Surface(
             color = Color(android.graphics.Color.parseColor(t.colors.background))
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                // Header
+            Column(modifier = Modifier.fillMaxSize()) {
+
+                // Header (altura exacta de tokens)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -59,7 +53,6 @@ fun HomeScreen(
                         .background(Color(android.graphics.Color.parseColor(t.colors.appBarBg))),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    // Título simple (si querés gradiente animado, lo añadimos con Brush + anim)
                     Text(
                         text = "Barrilete Cósmico TV",
                         color = Color(android.graphics.Color.parseColor(t.colors.textPrimary)),
@@ -68,31 +61,37 @@ fun HomeScreen(
                     )
                 }
 
-                // (Opcional) Banner: si tenés imagen local, ponela en drawable y cámbialo
-                // Aquí lo dejo como placeholder por si no tenés aún
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Chips/Secciones (si no querés, podés quitar esta fila)
+                // Chips/Secciones (si no querés, podés ocultar este bloque)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = t.layout.grid.paddingDp.dp, vertical = 4.dp),
+                        .padding(horizontal = t.layout.grid.paddingDp.dp, vertical = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Ejemplo: "Todos" solamente
                     Text(
                         text = "Todos",
                         color = Color(android.graphics.Color.parseColor(t.colors.chipText)),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
                         modifier = Modifier
                             .clip(RoundedCornerShape(t.shape.chipRadiusDp.dp))
                             .background(Color(android.graphics.Color.parseColor(t.colors.chipBg)))
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
                     )
                 }
 
-                // Grilla
-                val columns = gridColumnsForDevice(ctx, t.layout.grid.colsPortrait, t.layout.grid.colsLandscape, t.layout.grid.colsTablet)
+                // Grilla responsiva (cols por orientación/tablet desde tokens)
+                val cfg = LocalConfiguration.current
+                val widthDp = cfg.screenWidthDp
+                val heightDp = cfg.screenHeightDp
+                val isLandscape = widthDp > heightDp
+                val isTablet = widthDp >= 600
+                val columns = when {
+                    isTablet -> t.layout.grid.colsTablet
+                    isLandscape -> t.layout.grid.colsLandscape
+                    else -> t.layout.grid.colsPortrait
+                }
+
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
                     contentPadding = PaddingValues(all = t.layout.grid.paddingDp.dp),
@@ -120,8 +119,10 @@ private fun ChannelCard(
     val t = ThemeTokens.tokens
     val a = ThemeTokens.anims
 
+    // Animación de scale (press) + “lift” ligero por defecto
     var pressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(targetValue = if (pressed) a.cardPress.scaleTo else a.cardHoverLift.scaleTo, label = "cardScale")
+    val targetScale = if (pressed) a.cardPress.scaleTo else a.cardHoverLift.scaleTo
+    val scale by animateFloatAsState(targetValue = targetScale, label = "cardScale")
 
     Box(
         modifier = Modifier
@@ -129,13 +130,17 @@ private fun ChannelCard(
             .aspectRatio(ratioFromString(t.layout.card.aspectRatio))
             .clip(RoundedCornerShape(t.shape.cardRadiusDp.dp))
             .background(Color(android.graphics.Color.parseColor(t.colors.surface)))
-            .clickable { onClick() }
+            .clickable(
+                onClick = onClick,
+                onClickLabel = channel.name
+            )
             .scale(scale)
     ) {
-        // Imagen principal (poster o logo si no hay poster)
+        // Imagen principal: usa poster si hay, sino logo
+        val imageUrl = channel.image.ifBlank { channel.logo }
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(channel.image.ifBlank { channel.logo })
+                .data(imageUrl)
                 .crossfade(true)
                 .build(),
             contentDescription = channel.name,
@@ -143,15 +148,18 @@ private fun ChannelCard(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Borde sutil
+        // Borde sutil sobre la tarjeta
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .clip(RoundedCornerShape(t.shape.cardRadiusDp.dp))
-                .background(Color(android.graphics.Color.parseColor(t.colors.cardBorder)).copy(alpha = 0.12f))
+                .background(
+                    Color(android.graphics.Color.parseColor(t.colors.cardBorder))
+                        .copy(alpha = 0.12f)
+                )
         )
 
-        // Badge EN VIVO
+        // Badge EN VIVO (con pulso por alpha)
         if (channel.live) {
             val alphaPulse by animateFloatAsState(
                 targetValue = a.liveBadgePulse.alphaTo,
@@ -177,26 +185,25 @@ private fun ChannelCard(
             }
         }
 
-        // Título (debajo)
+        // Título (cinta inferior oscura)
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .background(
-                    Color.Black.copy(alpha = 0.35f)
-                )
+                .background(Color.Black.copy(alpha = 0.35f))
                 .padding(8.dp)
         ) {
             Text(
                 text = channel.name,
                 color = Color.White,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                maxLines = t.layout.card.titleMaxLines
             )
         }
     }
 }
 
-// ========== Helpers ==========
+// ================= Helpers =================
 
 private fun ratioFromString(aspect: String): Float {
     val parts = aspect.split(":")
@@ -207,26 +214,9 @@ private fun ratioFromString(aspect: String): Float {
     } else 16f / 9f
 }
 
-private fun gridColumnsForDevice(
-    context: Context,
-    colsPortrait: Int,
-    colsLandscape: Int,
-    colsTablet: Int
-): Int {
-    val cfg = LocalConfiguration.current
-    val widthDp = cfg.screenWidthDp
-    val heightDp = cfg.screenHeightDp
-    val isLandscape = widthDp > heightDp
-    val isTablet = widthDp >= 600
-    return when {
-        isTablet -> colsTablet
-        isLandscape -> colsLandscape
-        else -> colsPortrait
-    }
-}
-
 private fun loadChannels(context: Context): List<Channel> {
-    val json = context.assets.open("channels.json").use { it.readBytes().toString(Charset.defaultCharset()) }
+    val json = context.assets.open("channels.json")
+        .use { it.readBytes().toString(Charset.defaultCharset()) }
     val arr = JSONArray(json)
     val list = ArrayList<Channel>()
     for (i in 0 until arr.length()) {
