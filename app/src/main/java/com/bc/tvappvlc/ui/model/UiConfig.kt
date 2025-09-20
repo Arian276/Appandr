@@ -1,6 +1,5 @@
-package com.appandr.app.ui.model
+package com.bc.tvappvlc.ui.model
 
-// ====== Tokens ======
 data class UiColors(
     val background: String,
     val surface: String,
@@ -77,7 +76,6 @@ data class UiTokens(
     val badgeLive: UiBadgeLive
 )
 
-// ====== Animations ======
 data class AnimGrad(val durationMs: Long, val easing: String, val loop: String)
 data class AnimLift(
     val elevationFrom: Float,
