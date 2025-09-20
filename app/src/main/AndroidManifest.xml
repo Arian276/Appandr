@@ -1,18 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
     <application
-        android:label="Appandr"
+        android:label="TVAppVLC"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/Theme.Appandr">
+        android:theme="@style/Theme.TVAppVLC">
+
         <activity android:name="com.bc.tvappvlc.ui.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <!-- (Opcional) Si existe PlayerActivity, dejala sin launcher -->
-        <activity android:name="com.bc.tvappvlc.PlayerActivity" />
+        <!-- Si tenés un PlayerActivity, lo dejás sin launcher -->
+        <!-- <activity android:name="com.bc.tvappvlc.PlayerActivity" /> -->
     </application>
-
 </manifest>
