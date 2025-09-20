@@ -1,28 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- background -->
-    <color name="bc_background">#121416</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
 
-    <!-- card -->
-    <color name="bc_surface">#23272B</color>
-
-    <!-- foreground -->
-    <color name="bc_on_surface">#F2F2F2</color>
-
-    <!-- primary (celeste) -->
-    <color name="bc_primary">#5BD3F2</color>
-
-    <!-- accent (naranja) -->
-    <color name="bc_accent">#FFA54D</color>
-
-    <color name="bc_muted">#B0B5BA</color>
-
-    <!-- stroke tenue para card -->
-    <color name="bc_border">#364049</color>
-
-    <!-- fondo de badge -->
-    <color name="bc_badge_bg">#2D343A</color>
-
-    <color name="bc_badge_text">#E6E8EA</color>
-    <color name="bc_button_text">#FFFFFF</color>
+    <color name="app_background">#1A1A1A</color>
+    <color name="card_background">#2C2C2E</color>
+    <color name="card_stroke">#444444</color>
+    <color name="button_background">#007BFF</color>
 </resources>
