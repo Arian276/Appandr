@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Permiso necesario para reproducir streams e imágenes -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -10,7 +9,6 @@
         android:theme="@style/Theme.TVAppVLC"
         android:usesCleartextTraffic="true">
 
-        <!-- Activity principal -->
         <activity
             android:name="com.bc.tvappvlc.ui.MainActivity"
             android:exported="true">
@@ -20,7 +18,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Activity para el reproductor -->
         <activity
             android:name="com.bc.tvappvlc.PlayerActivity"
             android:exported="false" />
