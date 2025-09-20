@@ -35,9 +35,10 @@ android {
 
     buildFeatures {
         compose = true           // Compose UI
-        viewBinding = true       // Para ActivityPlayerBinding
+        viewBinding = true       // Para ActivityPlayerBinding del player
     }
     composeOptions {
+        // Compose Compiler 1.5.14 requiere Kotlin 1.9.24 (ya fijado arriba)
         kotlinCompilerExtensionVersion = "1.5.14"
     }
 
