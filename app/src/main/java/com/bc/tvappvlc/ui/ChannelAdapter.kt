@@ -1,37 +1,32 @@
-package com.sc.tvappvlc.ui
+package com.bc.tvappvlc.ui
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.arian.appandr.R
-import com.google.android.material.button.MaterialButton
-import com.sc.tvappvlc.model.Channel
+import com.bc.tvappvlc.R
+import com.bc.tvappvlc.model.Channel
 
-class ChannelAdapter(private val channels: List<Channel>) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
+class ChannelAdapter(private val items: List<Channel>) :
+    RecyclerView.Adapter<ChannelAdapter.VH>() {
 
-    class ChannelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val channelName: TextView = view.findViewById(R.id.channelName)
-        val channelCategory: TextView = view.findViewById(R.id.channelCategory)
-        val watchNowButton: MaterialButton = view.findViewById(R.id.watchNowButton)
+    class VH(v: View) : RecyclerView.ViewHolder(v) {
+        val name: TextView = v.findViewById(R.id.channelName)
+        val category: TextView = v.findViewById(R.id.channelCategory)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChannelViewHolder {
-        val view = LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        val v = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_channel, parent, false)
-        return ChannelViewHolder(view)
+        return VH(v)
     }
 
-    override fun onBindViewHolder(holder: ChannelViewHolder, position: Int) {
-        val channel = channels[position]
-        holder.channelName.text = channel.name
-        holder.channelCategory.text = channel.category
-
-        holder.watchNowButton.setOnClickListener {
-            // Lógica del botón
-        }
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        val ch = items[position]
+        holder.name.text = ch.name
+        holder.category.text = ch.category ?: ""
     }
 
-    override fun getItemCount() = channels.size
+    override fun getItemCount() = items.size
 }
