@@ -34,8 +34,8 @@ android {
     kotlinOptions { jvmTarget = "17" }
 
     buildFeatures {
-        compose = true           // ← Compose habilitado
-        viewBinding = true       // ← para ActivityPlayerBinding
+        compose = true           // Compose UI
+        viewBinding = true       // Para ActivityPlayerBinding
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    // Compose (BOM alinea versiones)
+    // Compose (BOM mantiene versiones alineadas)
     implementation(platform("androidx.compose:compose-bom:2024.09.00"))
     implementation("androidx.activity:activity-compose:1.9.2")
     implementation("androidx.compose.ui:ui")
@@ -57,10 +57,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
+    // Material Components (necesario para Theme.Material3.* en XML)
+    implementation("com.google.android.material:material:1.12.0")
+
     // Imágenes
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Media3 (ExoPlayer). Si usás VLC, podés quitar estas y dejar tu VLC.
+    // Reproductor Media3 (ExoPlayer). Si usás VLC, podés quitar estas líneas.
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
 }
