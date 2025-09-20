@@ -1,17 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <application
         android:label="TVAppVLC"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.TVAppVLC">
 
-        <activity android:name="com.bc.tvappvlc.ui.MainActivity">
+        <!-- Activity principal con intent-filter -->
+        <activity
+            android:name="com.bc.tvappvlc.ui.MainActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Si tenés un PlayerActivity, lo dejás sin launcher -->
-        <!-- <activity android:name="com.bc.tvappvlc.PlayerActivity" /> -->
+        <!-- Otras activities (no llevan exported si no tienen intent-filter) -->
+        <activity android:name="com.bc.tvappvlc.PlayerActivity" />
+
     </application>
 </manifest>
