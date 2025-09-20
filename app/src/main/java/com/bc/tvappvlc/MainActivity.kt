@@ -1,11 +1,11 @@
-package com.sc.tvappvlc.ui
+package com.bc.tvappvlc.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arian.appandr.R
-import com.sc.tvappvlc.model.Channel
+import com.bc.tvappvlc.R
+import com.bc.tvappvlc.model.Channel
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         val channels = listOf(
-            Channel("ESPN Premium", "Deportes", "url1"),
-            Channel("TNT Sports", "Deportes", "url2"),
-            Channel("DirecTV Sports", "Deportes", "url3"),
-            Channel("DirecTV+", "Entretenimiento", "url4"),
-            Channel("ESPN HD", "Deportes", "url5"),
-            Channel("ESPN 2 HD", "Deportes", "url6")
+            Channel(id = "espnp", name = "ESPN Premium", category = "Deportes", url = "url1"),
+            Channel(id = "tnts",  name = "TNT Sports",   category = "Deportes", url = "url2"),
+            Channel(id = "ds1",   name = "DirecTV Sports", category = "Deportes", url = "url3"),
+            Channel(id = "dtv+",  name = "DirecTV+",     category = "Entretenimiento", url = "url4"),
+            Channel(id = "espn",  name = "ESPN HD",      category = "Deportes", url = "url5"),
+            Channel(id = "espn2", name = "ESPN 2 HD",    category = "Deportes", url = "url6")
         )
 
         recyclerView.adapter = ChannelAdapter(channels)
