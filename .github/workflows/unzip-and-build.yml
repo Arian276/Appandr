@@ -1,23 +1,18 @@
 name: Unzip Android Project
-
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'q.zip'
   workflow_dispatch:
 
 jobs:
   unzip:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Verificar q.zip en la raíz
         run: |
-          echo "📦 Archivos en la raíz:"
           ls -la
           test -f q.zip || { echo "❌ No está q.zip en la raíz"; exit 1; }
 
@@ -27,7 +22,7 @@ jobs:
           rm -rf extracted
           unzip -o q.zip -d extracted
           echo "📁 Después de unzip:"
-          (cd extracted && tree -L 3 || true)
+          (cd extracted && find . -maxdepth 3 -print || true)
 
           ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || true)
           [ -z "${ROOT_DIR:-}" ] && ROOT_DIR="extracted"
@@ -39,3 +34,10 @@ jobs:
 
           echo "📦 Contenido final en la raíz:"
           ls -la
+
+      - name: Subir proyecto descomprimido
+        uses: actions/upload-artifact@v4
+        with:
+          name: proyecto-descomprimido
+          path: .
+          if-no-files-found: error
