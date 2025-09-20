@@ -1,6 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.Appandr" parent="Theme.Material3.DayNight.NoActionBar">
-        </style>
 
-    <style name="Theme.Appandr" parent="Base.Theme.Appandr" />
+    <!-- Tema principal de la app -->
+    <style name="Theme.TVAppVLC" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores del sistema (el resto viene de tokens.json en Compose) -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+
+        <!-- Esto ayuda a que Compose pinte bien edge-to-edge -->
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+    </style>
+
 </resources>
