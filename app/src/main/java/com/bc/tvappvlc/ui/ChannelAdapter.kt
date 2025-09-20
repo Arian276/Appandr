@@ -5,9 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.arian.appandr.R // Importamos R desde el paquete original de la app
+import com.arian.appandr.R
 import com.google.android.material.button.MaterialButton
-import com.sc.tvappvlc.model.Channel // Importamos la clase Channel desde su paquete
+import com.sc.tvappvlc.model.Channel
 
 class ChannelAdapter(private val channels: List<Channel>) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
 
