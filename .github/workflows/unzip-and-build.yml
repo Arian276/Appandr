@@ -1,8 +1,15 @@
-name: Unzip Android Project
+name: Unzip y guardar en main
+
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'q.zip'
+      - '.github/workflows/**'
   workflow_dispatch:
+
+permissions:
+  contents: write   # necesario para hacer push
 
 jobs:
   unzip:
@@ -10,34 +17,31 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Verificar q.zip en la raíz
         run: |
           ls -la
           test -f q.zip || { echo "❌ No está q.zip en la raíz"; exit 1; }
 
-      - name: Unzip q.zip (auto-detect root)
+      - name: Unzip q.zip y mover a la raíz
         run: |
           set -euo pipefail
           rm -rf extracted
           unzip -o q.zip -d extracted
-          echo "📁 Después de unzip:"
-          (cd extracted && find . -maxdepth 3 -print || true)
-
-          ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || true)
-          [ -z "${ROOT_DIR:-}" ] && ROOT_DIR="extracted"
-
-          echo "↪️ Proyecto detectado en: $ROOT_DIR"
+          ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || echo "extracted")
           shopt -s dotglob
           rsync -a "$ROOT_DIR"/ .
           rm -rf extracted q.zip
-
-          echo "📦 Contenido final en la raíz:"
+          echo "📦 Contenido final:"
           ls -la
 
-      - name: Subir proyecto descomprimido
-        uses: actions/upload-artifact@v4
-        with:
-          name: proyecto-descomprimido
-          path: .
-          if-no-files-found: error
+      - name: Commit & push a main
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Unzip q.zip [skip ci]" || { echo "Nada para commitear"; exit 0; }
+          git push
