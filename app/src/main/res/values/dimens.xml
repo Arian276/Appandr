@@ -1,6 +1,4 @@
 <resources>
-    <!-- Valores por defecto, podés editarlos si querés reusar -->
-    <dimen name="default_padding">8dp</dimen>
-    <dimen name="default_margin">8dp</dimen>
-    <dimen name="card_corner_radius">12dp</dimen>
+    <!-- Debe igualar tokens.json → shape.cardRadiusDp -->
+    <dimen name="bc_radius">14dp</dimen>
 </resources>
