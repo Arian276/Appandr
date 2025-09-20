@@ -1,20 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Tema nocturno -->
-    <style name="Theme.TVAppVLC" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorOnPrimary">@color/colorOnPrimary</item>
-
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorOnSecondary">@color/colorOnSecondary</item>
-
-        <item name="android:colorBackground">@color/colorBackground</item>
-        <item name="colorSurface">@color/colorSurface</item>
-        <item name="colorOnSurface">@color/colorOnSurface</item>
-
-        <item name="android:navigationBarColor" tools:targetApi="l">?android:colorBackground</item>
-        <item name="fontFamily">@font/inter</item>
-    </style>
-
+<resources>
+    <!-- Inherit del mismo tema para modo noche; sin overrides para evitar conflictos -->
+    <style name="Theme.TVAppVLC" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>
