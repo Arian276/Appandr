@@ -1,10 +1,11 @@
 pluginManagement {
     repositories {
-        google()
+        google()      // ⬅️ necesario para com.android.application
         mavenCentral()
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -12,5 +13,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "TVAppVLC"
+
+rootProject.name = "Appandr"
 include(":app")
