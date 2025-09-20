@@ -1,15 +1,18 @@
-package com.arian.appandr
+package com.sc.tvappvlc.ui // Tu nuevo paquete está bien
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.arian.appandr.R // ¡Y AQUÍ TAMBIÉN AÑADIMOS LA LÍNEA MÁGICA!
 import com.google.android.material.button.MaterialButton
+import com.sc.tvappvlc.model.Channel
 
 class ChannelAdapter(private val channels: List<Channel>) : RecyclerView.Adapter<ChannelAdapter.ChannelViewHolder>() {
 
     class ChannelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        // Usamos las referencias a R que ahora sí se pueden encontrar
         val channelName: TextView = view.findViewById(R.id.channelName)
         val channelCategory: TextView = view.findViewById(R.id.channelCategory)
         val watchNowButton: MaterialButton = view.findViewById(R.id.watchNowButton)
@@ -27,8 +30,7 @@ class ChannelAdapter(private val channels: List<Channel>) : RecyclerView.Adapter
         holder.channelCategory.text = channel.category
 
         holder.watchNowButton.setOnClickListener {
-            // Aquí puedes agregar la lógica para cuando se presione el botón
-            // Por ejemplo: Toast.makeText(holder.itemView.context, "Viendo ${channel.name}", Toast.LENGTH_SHORT).show()
+            // Lógica del botón
         }
     }
 
