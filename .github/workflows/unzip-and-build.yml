@@ -1,37 +1,47 @@
-name: Unzip BarrileteCosmicTV.zip
+name: Build Android APK
 
 on:
   push:
     branches: [ main ]
     paths:
-      - 'BarrileteCosmicTV.zip'
+      - '**/*.kt'
+      - '**/*.java'
+      - '**/*.xml'
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle*'
+      - 'settings.gradle*'
+      - '.github/workflows/**'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  unzip:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          fetch-depth: 0
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
 
-      - name: Descomprimir BarrileteCosmicTV.zip
-        run: |
-          rm -rf extracted
-          unzip -o BarrileteCosmicTV.zip -d extracted
-          ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || echo "extracted")
-          shopt -s dotglob
-          rsync -a "$ROOT_DIR"/ .
-          rm -rf extracted BarrileteCosmicTV.zip
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Commit cambios
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Unzip automático BarrileteCosmicTV.zip" || echo "Sin cambios"
-          git push
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build (Debug)
+        run: ./gradlew --no-daemon clean assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: |
+            **/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
