@@ -1,20 +1,20 @@
 [
   {
-    "id": "prueba1",
     "name": "Prueba 1",
     "logo": "https://i.imgur.com/9JrQOeM.png",
-    "image": "https://i.imgur.com/9JrQOeM.png",
-    "tags": ["test"],
-    "live": true,
-    "streamUrl": "http://190.52.105.146:8000/play/a04m"
+    "url": "http://190.52.105.146:8000/play/a04m",
+    "description": "ESPN Premium",
+    "quality": "1080p",
+    "category": "Deportes",
+    "viewers": 0
   },
   {
-    "id": "prueba2",
     "name": "Prueba",
     "logo": "https://i.imgur.com/3ZQ3Vw7.png",
-    "image": "https://i.imgur.com/3ZQ3Vw7.png",
-    "tags": ["test"],
-    "live": true,
-    "streamUrl": "http://190.52.105.146:8000/play/a0b9"
+    "url": "http://190.52.105.146:8000/play/a0b9",
+    "description": "TNT Sports",
+    "quality": "1080p",
+    "category": "Deportes",
+    "viewers": 0
   }
 ]
