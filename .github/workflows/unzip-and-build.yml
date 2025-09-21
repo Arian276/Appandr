@@ -1,13 +1,17 @@
-name: Clean Root
+name: Unzip BarrileteCosmicTV.zip
 
 on:
-  workflow_dispatch:   # se ejecuta manualmente
+  push:
+    branches: [ main ]
+    paths:
+      - 'BarrileteCosmicTV.zip'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  clean:
+  unzip:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,15 +19,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Borrar todo (excepto .git y workflows)
+      - name: Limpiar repo (menos .git y workflows)
         run: |
           shopt -s extglob dotglob
           rm -rf !(.git|.github)
 
-      - name: Commit limpieza
+      - name: Descomprimir BarrileteCosmicTV.zip
+        run: |
+          unzip -o BarrileteCosmicTV.zip -d extracted
+          ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1 || echo "extracted")
+          shopt -s dotglob
+          mv "$ROOT_DIR"/* .
+          rm -rf extracted BarrileteCosmicTV.zip
+
+      - name: Commit cambios
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Clean repo root (solo workflows quedan)" || echo "Sin cambios"
+          git add .
+          git commit -m "Unzip BarrileteCosmicTV.zip (limpio)" || echo "Sin cambios"
           git push
