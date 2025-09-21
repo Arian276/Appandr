@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Colores base -->
-    <color name="white">#FFFFFFFF</color>
-    <color name="black">#FF000000</color>
-    <color name="gray">#FF888888</color>
+    <!-- Colores principales -->
+    <color name="primary">#009688</color>
+    <color name="primary_ripple">#33009688</color>
+    <color name="badge_bg">#FF5252</color>
 
-    <!-- Paleta -->
-    <color name="teal_700">#018786</color> <!-- 🔥 agregado -->
-    <color name="card_stroke">#22000000</color>
-    <color name="background_dark">#121212</color>
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B3FFFFFF</color>
+    <!-- Colores base -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#888888</color>
+
+    <!-- Fondo de tarjetas -->
+    <color name="card_bg">#1E1E1E</color>
 </resources>
