@@ -1,4 +1,4 @@
-// Archivo de nivel proyecto (no el del módulo app)
+// Archivo build.gradle.kts del proyecto raíz
 
 plugins {
     id("com.android.application") version "8.4.2" apply false
