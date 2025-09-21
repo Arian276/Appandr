@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -34,7 +34,8 @@ fun HomeScreen(channels: List<Channel>) {
             items(channels) { channel ->
                 ChannelCard(channel = channel) {
                     val intent = Intent(context, PlayerActivity::class.java).apply {
-                        putExtra(PlayerActivity.EXTRA_URL, channel.streamUrl)
+                        putExtra(PlayerActivity.EXTRA_URL, channel.url)
+                        putExtra("title", channel.name)
                     }
                     context.startActivity(intent)
                 }
@@ -44,15 +45,15 @@ fun HomeScreen(channels: List<Channel>) {
 }
 
 @Composable
-fun ChannelCard(channel: Channel, onClick: () -> Unit) {
+private fun ChannelCard(channel: Channel, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Row(modifier = Modifier.padding(8.dp)) {
+        Row(modifier = Modifier.padding(12.dp)) {
             AsyncImage(
                 model = channel.logo,
                 contentDescription = channel.name,
@@ -61,17 +62,15 @@ fun ChannelCard(channel: Channel, onClick: () -> Unit) {
                     .padding(end = 12.dp),
                 contentScale = ContentScale.Fit
             )
-            Column {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = channel.name,
                     style = MaterialTheme.typography.titleMedium
                 )
-                if (!channel.description.isNullOrEmpty()) {
-                    Text(
-                        text = channel.description,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                Text(
+                    text = channel.url,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }
