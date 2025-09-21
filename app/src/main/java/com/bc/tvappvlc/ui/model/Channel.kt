@@ -1,4 +1,4 @@
-package com.bc.tvappvlc.ui.model
+package com.bc.tvappvlc.model
 
 data class Channel(
     val name: String,
