@@ -1,4 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Debe igualar tokens.json → shape.cardRadiusDp -->
-    <dimen name="bc_radius">14dp</dimen>
+    <!-- Radios -->
+    <dimen name="radius_sm">8dp</dimen>
+    <dimen name="radius_lg">14dp</dimen>
+    <dimen name="radius_xl">18dp</dimen>
+
+    <!-- Espaciado -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
 </resources>
