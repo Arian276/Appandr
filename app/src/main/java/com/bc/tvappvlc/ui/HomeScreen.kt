@@ -24,44 +24,41 @@ fun HomeScreen(channels: List<Channel>) {
     val context = LocalContext.current
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
     ) {
         items(channels) { channel ->
-            ChannelCard(channel = channel) {
-                val intent = Intent(context, PlayerActivity::class.java).apply {
-                    putExtra(PlayerActivity.EXTRA_URL, channel.url)
-                }
-                context.startActivity(intent)
-            }
-        }
-    }
-}
-
-@Composable
-fun ChannelCard(channel: Channel, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Image(
-                painter = rememberAsyncImagePainter(channel.logo),
-                contentDescription = channel.name,
-                contentScale = ContentScale.Crop,
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = channel.name,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(8.dp)
-            )
+                    .padding(vertical = 8.dp)
+                    .clickable {
+                        val intent = Intent(context, PlayerActivity::class.java).apply {
+                            // ✅ corregido: usamos PlayerActivity.EXTRA_URL
+                            putExtra(PlayerActivity.EXTRA_URL, channel.url)
+                        }
+                        context.startActivity(intent)
+                    },
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column {
+                    Image(
+                        painter = rememberAsyncImagePainter(channel.logo),
+                        contentDescription = channel.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = channel.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
         }
     }
 }
