@@ -13,7 +13,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        vectorDrawables { useSupportLibrary = true }
     }
 
     buildTypes {
@@ -24,7 +23,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-        debug { isMinifyEnabled = false }
     }
 
     compileOptions {
@@ -40,12 +38,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
     }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
 }
 
 dependencies {
@@ -57,13 +49,16 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // Material Components (para temas XML)
+    // Material Components
     implementation("com.google.android.material:material:1.12.0")
 
-    // Imágenes
+    // Coil (imágenes)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Media3 (ExoPlayer)
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
+
+    // VLC (LibVLC)
+    implementation("org.videolan.android:libvlc-all:3.5.1")
 }
