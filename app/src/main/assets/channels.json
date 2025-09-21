@@ -1,20 +1,74 @@
 [
   {
-    "name": "Prueba 1",
-    "logo": "https://i.imgur.com/9JrQOeM.png",
-    "url": "http://190.52.105.146:8000/play/a04m",
-    "description": "ESPN Premium",
+    "name": "ESPN Premium HD AR",
+    "logo": "espn_premium.png",
     "quality": "1080p",
-    "category": "Deportes",
-    "viewers": 0
+    "viewers": 0,
+    "description": "ESPN Premium",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-espn-premium.com"
   },
   {
-    "name": "Prueba",
-    "logo": "https://i.imgur.com/3ZQ3Vw7.png",
-    "url": "http://190.52.105.146:8000/play/a0b9",
-    "description": "TNT Sports",
+    "name": "TNT Sports HD AR",
+    "logo": "tnt_sports.png",
     "quality": "1080p",
-    "category": "Deportes",
-    "viewers": 0
+    "viewers": 0,
+    "description": "Deportes TNT",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-tnt-sports.com"
+  },
+  {
+    "name": "DirecTV Sport",
+    "logo": "directv_sport.png",
+    "quality": "1080p",
+    "viewers": 0,
+    "description": "DirecTV Sport",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-directv-sport.com"
+  },
+  {
+    "name": "DirecTV+",
+    "logo": "directv_plus.png",
+    "quality": "1080p",
+    "viewers": 0,
+    "description": "DirecTV+",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-directvplus.com"
+  },
+  {
+    "name": "ESPN HD (81 semanas) AR",
+    "logo": "espn_hd.png",
+    "quality": "1080p",
+    "viewers": 0,
+    "description": "ESPN",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-espn-hd.com"
+  },
+  {
+    "name": "ESPN 2 HD (81 semanas) AR",
+    "logo": "espn2_hd.png",
+    "quality": "1080p",
+    "viewers": 0,
+    "description": "ESPN 2",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-espn2-hd.com"
+  },
+  {
+    "name": "ESPN 3 HD (81 semanas) AR",
+    "logo": "espn3_hd.png",
+    "quality": "1080p",
+    "viewers": 0,
+    "description": "ESPN 3",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-espn3-hd.com"
+  },
+  {
+    "name": "Fox Sports HD (81w) AR",
+    "logo": "fox_sports.png",
+    "quality": "1080p",
+    "viewers": 0,
+    "description": "Fox Sports",
+    "cta": "Ver ahora",
+    "url": "https://tu-enlace-foxsports-hd.com"
   }
 ]
