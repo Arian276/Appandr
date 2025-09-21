@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_medium"
+    android:background="@drawable/card_bg">
+
+    <!-- Contenedor del logo con badge -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:background="@drawable/card_bg" />
+
+        <TextView
+            android:id="@+id/txtQuality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:background="@drawable/bg_badge_quality"
+            android:padding="@dimen/padding_small"
+            android:text="1080p"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_small"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <!-- Texto -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/padding_small">
+
+        <TextView
+            android:id="@+id/txtName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Channel name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_large"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripción del canal"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/text_medium" />
+    </LinearLayout>
+
+    <!-- Botón -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnWatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_small"
+        android:background="@drawable/btn_cta_bg"
+        android:text="VER AHORA"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_play"
+        app:iconGravity="textStart"
+        style="@style/Widget.MaterialComponents.Button" />
+
+</LinearLayout>
