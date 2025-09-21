@@ -39,21 +39,20 @@ fun HomeScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(Dimens.paddingMedium)
+            .padding(16.dp)
     ) {
         Text(
             text = "Barrilete Cósmico TV",
             style = TextStyle(
-                fontFamily = defaultFontFamily,
                 fontWeight = FontWeight.Bold,
-                fontSize = TextSizes.titleLarge,
+                fontSize = 24.sp,
                 color = MaterialTheme.colorScheme.onBackground
             ),
-            modifier = Modifier.padding(bottom = Dimens.paddingMedium)
+            modifier = Modifier.padding(bottom = 16.dp)
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(Dimens.paddingSmall)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(channels) { channel ->
                 ChannelCard(channel)
@@ -67,30 +66,29 @@ fun ChannelCard(channel: Channel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp),
+            .height(120.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(Dimens.cardRadius)
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(Dimens.paddingMedium),
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = rememberAsyncImagePainter(channel.logo),
                 contentDescription = channel.name,
                 modifier = Modifier
-                    .size(120.dp)
-                    .padding(end = Dimens.paddingMedium),
+                    .size(100.dp)
+                    .padding(end = 12.dp),
                 contentScale = ContentScale.Fit
             )
             Text(
                 text = channel.name,
                 style = TextStyle(
-                    fontFamily = defaultFontFamily,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = TextSizes.bodyLarge,
+                    fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             )
