@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Base -->
-    <color name="white">#FFFFFFFF</color>
-    <color name="black">#FF000000</color>
-
-    <!-- Fondo app / tarjetas -->
-    <color name="app_bg">#111114</color>
-    <color name="card_bg">#1A1B20</color>
+    <!-- Colores principales -->
+    <color name="primary">#1DE9B6</color>
+    <color name="primary_dark">#00BFA5</color>
+    <color name="primary_ripple">#33FFFFFF</color>
 
     <!-- Texto -->
-    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#B3FFFFFF</color>
 
-    <!-- Acciones / primarios -->
-    <color name="primary">#00C2A8</color>
-    <color name="primary_ripple">#3300C2A8</color>
+    <!-- Badge (calidad, en vivo, etc.) -->
+    <color name="on_badge">#FFFFFF</color>
+    <color name="badge_bg">#424242</color>   <!-- 🔥 agregado -->
+    <color name="gray">#9E9E9E</color>      <!-- 🔥 agregado -->
 
-    <!-- Badge de calidad / chips -->
-    <color name="on_badge">#FFFFFFFF</color>
-    <color name="teal_700">#018786</color> <!-- requerido por chip_bg.xml -->
-
-    <!-- Bordes / Strokes -->
-    <color name="azul_stroke">#223BFF</color> <!-- requerido por card_bg.xml -->
-
+    <!-- Extras -->
+    <color name="teal_700">#00796B</color>
 </resources>
