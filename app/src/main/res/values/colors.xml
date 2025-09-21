@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Colores principales -->
-    <color name="primary">#1DE9B6</color>
-    <color name="primary_dark">#00BFA5</color>
+    <!-- App base -->
+    <color name="app_background">#121212</color>
+    <color name="app_surface">#1E1E1E</color>
+    <color name="app_primary">#00BCD4</color>
+    <color name="app_primary_dark">#0097A7</color>
+    <color name="app_accent">#FF4081</color>
+
+    <!-- Text -->
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#B3FFFFFF</color>
+    <color name="text_hint">#80FFFFFF</color>
+    <color name="text_error">#FF5252</color>
+
+    <!-- Buttons -->
+    <color name="btn_cta_bg">#262DD4BF</color>
+    <color name="btn_cta_text">#FFFFFFFF</color>
+    <color name="primary">#00BCD4</color>
     <color name="primary_ripple">#33FFFFFF</color>
 
-    <!-- Texto -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B3FFFFFF</color>
-
-    <!-- Badge (calidad, en vivo, etc.) -->
-    <color name="on_badge">#FFFFFF</color>
-    <color name="badge_bg">#424242</color>   <!-- 🔥 agregado -->
-    <color name="gray">#9E9E9E</color>      <!-- 🔥 agregado -->
-
-    <!-- Extras -->
+    <!-- Badges / Chips -->
+    <color name="badge_bg">#262DD4BF</color>
+    <color name="on_badge">#FFFFFFFF</color>
+    <color name="bc_badge_text">#FFFFFFFF</color> <!-- FIX agregado -->
     <color name="teal_700">#00796B</color>
+    <color name="chip_bg">#143A3A</color>
+    <color name="chip_stroke">#262DD4BF</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#FF888888</color>
+    <color name="azul_stroke">#2196F3</color>
 </resources>
