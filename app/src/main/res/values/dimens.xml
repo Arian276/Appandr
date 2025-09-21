@@ -3,6 +3,7 @@
     <!-- Radios -->
     <dimen name="bc_radius">12dp</dimen>
     <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="radius_18">18dp</dimen> <!-- 🔥 agregado -->
 
     <!-- Márgenes -->
     <dimen name="card_margin">8dp</dimen>
