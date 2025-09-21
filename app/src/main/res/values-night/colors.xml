@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Versión dark (puede ser igual a la normal si no diferenciás) -->
-    <color name="bc_background">#121416</color>
-    <color name="bc_surface">#23272B</color>
-    <color name="bc_on_surface">#F2F2F2</color>
+    <!-- Colores principales -->
+    <color name="primary">#2196F3</color>
+    <color name="on_primary">#FFFFFFFF</color>
 
-    <color name="bc_primary">#5BD3F2</color>
-    <color name="bc_accent">#FFA54D</color>
+    <!-- Colores de texto -->
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#B3FFFFFF</color>
 
-    <color name="bc_muted">#B0B5BA</color>
-    <color name="bc_border">#364049</color>
-    <color name="bc_badge_bg">#2D343A</color>
-    <color name="bc_badge_text">#E6E8EA</color>
-    <color name="bc_button_text">#FFFFFF</color>
+    <!-- Colores de badge -->
+    <color name="badge_bg">#FF3B30</color>
+    <color name="on_badge">#FFFFFFFF</color>
 
-    <!-- Alias para themes -->
-    <color name="colorPrimary">@color/bc_primary</color>
-    <color name="colorOnPrimary">@color/bc_button_text</color>
+    <!-- Colores de cards -->
+    <color name="card_bg">#1E1E1E</color>
+    <color name="azul_stroke">#2979FF</color>
 
-    <color name="colorSecondary">@color/bc_accent</color>
-    <color name="colorOnSecondary">@color/bc_button_text</color>
-
-    <color name="colorBackground">@color/bc_background</color>
-    <color name="colorSurface">@color/bc_surface</color>
-    <color name="colorOnSurface">@color/bc_on_surface</color>
+    <!-- Extra -->
+    <color name="gray">#9E9E9E</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="teal_700">#018786</color>
+    <color name="primary_ripple">#332196F3</color>
 </resources>
