@@ -6,6 +6,7 @@
 
     <corners android:radius="@dimen/bc_radius" />
 
+    <!-- si usás padding interno en el shape -->
     <padding
         android:left="@dimen/chip_padding"
         android:top="@dimen/chip_padding"
