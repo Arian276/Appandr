@@ -10,19 +10,18 @@ import com.bc.tvappvlc.ui.theme.AppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Datos dummy para compilar. Luego los reemplazás leyendo assets/channels.json
+        val sampleChannels = listOf(
+            Channel("Prueba 1", "https://i.imgur.com/9JrQOeM.png", "http://190.52.105.146:8000/play/a04m"),
+            Channel("Prueba",   "https://i.imgur.com/3ZQ3Vw7.png", "http://190.52.105.146:8000/play/a0b9")
+        )
+
         setContent {
             AppTheme {
-                // TODO: reemplazar con datos cargados de JSON remoto
-                val sampleChannels = listOf(
-                    Channel(id = "1", name = "Canal Demo 1", streamUrl = "http://test/1"),
-                    Channel(id = "2", name = "Canal Demo 2", streamUrl = "http://test/2")
-                )
-
                 HomeScreen(
                     channels = sampleChannels,
-                    onChannelClick = { channel ->
-                        // TODO: lanzar PlayerActivity con channel.streamUrl
-                    }
+                    onChannelClick = { /* TODO: lanzar PlayerActivity con it.url */ }
                 )
             }
         }
