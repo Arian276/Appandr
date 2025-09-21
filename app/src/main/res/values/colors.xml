@@ -8,37 +8,17 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- BarrileteCosmico TV Colors - Tema Argentino Exacto -->
-    <!-- Argentina celeste: hsl(195, 85%, 65%) = #36B5D8 -->
+    <!-- BarrileteCosmico TV Colors - Tema Argentino -->
     <color name="cosmic_primary">#FF36B5D8</color>
     <color name="cosmic_primary_variant">#FF2A91AA</color>
-    <!-- Argentina orange: hsl(25, 95%, 58%) = #F77A2B -->
     <color name="cosmic_secondary">#FFF77A2B</color>
     <color name="cosmic_secondary_variant">#FFD4621A</color>
-    
-    <!-- Backgrounds y surfaces (tema oscuro) -->
     <color name="cosmic_background">#FF0C1218</color>
     <color name="cosmic_surface">#FF1A242E</color>
-    <color name="cosmic_card">#FF1E2A38</color>
-    <color name="cosmic_border">#FF2A3441</color>
-    
-    <!-- Colores de texto -->
     <color name="cosmic_on_primary">#FFFFFFFF</color>
     <color name="cosmic_on_secondary">#FFFFFFFF</color>
     <color name="cosmic_on_background">#FFF5F5F5</color>
     <color name="cosmic_on_surface">#FFE8E8E8</color>
-    <color name="cosmic_muted">#FF9CA3AF</color>
-    
-    <!-- Colores de estado y efectos -->
-    <color name="live_indicator">#FF10B981</color>
-    <color name="live_glow">#FF34D399</color>
-    <color name="error_color">#FFEF4444</color>
-    <color name="warning_color">#FFF59E0B</color>
-    
-    <!-- Argentina Energy Colors -->
-    <color name="argentina_energy">#FFE740B7</color>
-    <color name="argentina_gold">#FFD4AF37</color>
-    <color name="argentina_passion">#FFE83D3D</color>
     
     <!-- Gradient Colors -->
     <color name="gradient_start">#FF4ECDC4</color>
