@@ -1,4 +1,4 @@
-name: Unzip & Build Android APK
+name: Unzip BarrileteCosmicTV.zip
 
 on:
   workflow_dispatch:
@@ -11,50 +11,37 @@ permissions:
   contents: write
 
 jobs:
-  unzip_build:
+  unzip:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Clean root (keep .git, .github, and zip)
+      - name: Verificar que el zip exista
+        run: |
+          test -f BarrileteCosmicTV.zip || { echo "❌ No está BarrileteCosmicTV.zip en la raíz"; exit 1; }
+
+      - name: Limpiar raíz (menos .git, .github y el zip)
         run: |
           shopt -s extglob dotglob
           rm -rf !(.git|.github|BarrileteCosmicTV.zip)
 
-      - name: Unzip and move content to root
+      - name: Descomprimir y mover contenido a la raíz
         run: |
           unzip -q BarrileteCosmicTV.zip -d extracted
-          # Detecta si el zip tiene carpeta contenedora
           ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1)
           shopt -s dotglob
           mv "$ROOT_DIR"/* .
           rm -rf extracted BarrileteCosmicTV.zip
-          echo "📂 Archivos en raíz después de unzip:"
+          echo "📂 Archivos en raíz:"
           ls -la
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Build Debug APK
-        run: ./gradlew --no-daemon clean assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: '**/build/outputs/apk/debug/*.apk'
-          if-no-files-found: error
+      - name: Commit resultado
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Unzip automático BarrileteCosmicTV.zip" || echo "Sin cambios"
+          git push || true
