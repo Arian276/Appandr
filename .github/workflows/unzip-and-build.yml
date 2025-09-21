@@ -1,52 +1,46 @@
-name: Unzip BarrileteCosmicTV.zip
+name: Build Android APK
 
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
     paths:
-      - 'BarrileteCosmicTV.zip'
-
-permissions:
-  contents: write
+      - '**/*.kt'
+      - '**/*.java'
+      - '**/*.xml'
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle*'
+      - 'settings.gradle*'
+      - '.github/workflows/**'
 
 jobs:
-  unzip:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Verificar ZIP
-        run: |
-          test -f BarrileteCosmicTV.zip || { echo "❌ Falta BarrileteCosmicTV.zip"; exit 1; }
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
 
-      - name: Limpiar raíz (mantener .git, .github y el ZIP)
-        run: |
-          shopt -s extglob dotglob
-          rm -rf !(.git|.github|BarrileteCosmicTV.zip)
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Descomprimir y mover TODO a la raíz
-        run: |
-          set -euo pipefail
-          unzip -q BarrileteCosmicTV.zip -d extracted
-          shopt -s dotglob
-          # Si el ZIP tiene exactamente UNA carpeta contenedora y NADA más, usarla.
-          if [ "$(find extracted -mindepth 1 -maxdepth 1 | wc -l)" -eq 1 ] && [ -d extracted/* ]; then
-            SRC=$(find extracted -mindepth 1 -maxdepth 1 -type d -print -quit)
-          else
-            # Caso típico: el ZIP ya trae app/, gradle/, gradlew, etc. en su raíz
-            SRC="extracted"
-          fi
-          rsync -a "$SRC"/ ./ --exclude='.git' --exclude='.github'
-          rm -rf extracted BarrileteCosmicTV.zip
-          echo "📂 Contenido final:"
-          ls -la
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      - name: Commit resultado
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Unzip completo a la raíz" || echo "Sin cambios"
-          git push || true
+      - name: Build (Debug)
+        run: ./gradlew --no-daemon clean assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: '**/build/outputs/apk/debug/*.apk'
+          if-no-files-found: error
