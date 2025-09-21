@@ -14,35 +14,39 @@ jobs:
   unzip:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
-      - name: Verificar que el zip exista
+      - name: Verificar ZIP
         run: |
-          test -f BarrileteCosmicTV.zip || { echo "❌ No está BarrileteCosmicTV.zip en la raíz"; exit 1; }
+          test -f BarrileteCosmicTV.zip || { echo "❌ Falta BarrileteCosmicTV.zip"; exit 1; }
 
-      - name: Limpiar raíz (menos .git, .github y el zip)
+      - name: Limpiar raíz (mantener .git, .github y el ZIP)
         run: |
           shopt -s extglob dotglob
           rm -rf !(.git|.github|BarrileteCosmicTV.zip)
 
       - name: Descomprimir y mover TODO a la raíz
         run: |
+          set -euo pipefail
           unzip -q BarrileteCosmicTV.zip -d extracted
-          ROOT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n1)
-          echo "📦 Carpeta detectada: $ROOT_DIR"
           shopt -s dotglob
-          mv "$ROOT_DIR"/* .
+          # Si el ZIP tiene exactamente UNA carpeta contenedora y NADA más, usarla.
+          if [ "$(find extracted -mindepth 1 -maxdepth 1 | wc -l)" -eq 1 ] && [ -d extracted/* ]; then
+            SRC=$(find extracted -mindepth 1 -maxdepth 1 -type d -print -quit)
+          else
+            # Caso típico: el ZIP ya trae app/, gradle/, gradlew, etc. en su raíz
+            SRC="extracted"
+          fi
+          rsync -a "$SRC"/ ./ --exclude='.git' --exclude='.github'
           rm -rf extracted BarrileteCosmicTV.zip
-          echo "📂 Archivos en raíz ahora:"
+          echo "📂 Contenido final:"
           ls -la
 
       - name: Commit resultado
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Unzip completo BarrileteCosmicTV.zip" || echo "Sin cambios"
+          git add -A
+          git commit -m "Unzip completo a la raíz" || echo "Sin cambios"
           git push || true
