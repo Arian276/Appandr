@@ -1,17 +1,21 @@
 package com.bc.tvappvlc.ui
 
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.bc.tvappvlc.PlayerActivity
 import com.bc.tvappvlc.model.Channel
 
@@ -19,59 +23,45 @@ import com.bc.tvappvlc.model.Channel
 fun HomeScreen(channels: List<Channel>) {
     val context = LocalContext.current
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Barrilete TV") }
-            )
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            items(channels) { channel ->
-                ChannelCard(channel = channel) {
-                    val intent = Intent(context, PlayerActivity::class.java).apply {
-                        putExtra(PlayerActivity.EXTRA_URL, channel.url)
-                        putExtra("title", channel.name)
-                    }
-                    context.startActivity(intent)
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(channels) { channel ->
+            ChannelCard(channel = channel) {
+                val intent = Intent(context, PlayerActivity::class.java).apply {
+                    putExtra(PlayerActivity.EXTRA_URL, channel.url)
                 }
+                context.startActivity(intent)
             }
         }
     }
 }
 
 @Composable
-private fun ChannelCard(channel: Channel, onClick: () -> Unit) {
+fun ChannelCard(channel: Channel, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Row(modifier = Modifier.padding(12.dp)) {
-            AsyncImage(
-                model = channel.logo,
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Image(
+                painter = rememberAsyncImagePainter(channel.logo),
                 contentDescription = channel.name,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(96.dp)
-                    .padding(end = 12.dp),
-                contentScale = ContentScale.Fit
+                    .fillMaxWidth()
+                    .height(180.dp)
             )
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = channel.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = channel.url,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = channel.name,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
