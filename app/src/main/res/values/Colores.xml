@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base -->
+    <color name="bg">#111317</color>
+    <color name="card_bg">#1C2127</color>
+    <color name="card_stroke">#2A3139</color>
+
+    <!-- Texto -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B8C1CC</color>
+
+    <!-- Primario (botón “Ver ahora”) -->
+    <color name="primary">#2EC7A6</color>
+    <color name="on_primary">#00110D</color>
+    <color name="primary_ripple">#332EC7A6</color>
+
+    <!-- Badge -->
+    <color name="badge_bg">#36414D</color>
+    <color name="on_badge">#EAF2FF</color>
+</resources>
