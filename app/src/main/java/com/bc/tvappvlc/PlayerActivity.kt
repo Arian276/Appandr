@@ -1,57 +1,67 @@
 package com.bc.tvappvlc
 
-import android.net.Uri
 import android.os.Bundle
+import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import org.videolan.libvlc.LibVLC
-import org.videolan.libvlc.Media
-import org.videolan.libvlc.MediaPlayer
-import org.videolan.libvlc.util.VLCVideoLayout
+import androidx.core.view.setPadding
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 
 class PlayerActivity : AppCompatActivity() {
 
     companion object {
-        const val EXTRA_URL = "extra_url" // ✅ constante accesible desde HomeScreen
+        const val EXTRA_URL = "EXTRA_URL"
     }
 
-    private lateinit var libVlc: LibVLC
-    private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var videoLayout: VLCVideoLayout
-
-    private var isPlaying = true
+    private var player: ExoPlayer? = null
+    private lateinit var playerView: PlayerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
 
+        // Mantener pantalla encendida mientras se reproduce
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        videoLayout = findViewById(R.id.videoLayout)
+        // Crear PlayerView programáticamente (sin XML)
+        playerView = PlayerView(this).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            setPadding(0)
+            keepScreenOn = true
+        }
+        setContentView(playerView)
 
-        // Inicializar VLC
-        libVlc = LibVLC(this, ArrayList<String>().apply {
-            add("--no-drop-late-frames")
-            add("--no-skip-frames")
-        })
-        mediaPlayer = MediaPlayer(libVlc)
-        mediaPlayer.attachViews(videoLayout, null, false, false)
-
-        // Recuperar URL desde el intent
-        val url = intent.getStringExtra(EXTRA_URL)
-        if (url != null) {
-            val media = Media(libVlc, Uri.parse(url))
-            mediaPlayer.media = media
-            media.release()
-            mediaPlayer.play()
+        // Obtener URL del intent
+        val url = intent.getStringExtra(EXTRA_URL).orEmpty()
+        if (url.isNotBlank()) {
+            initPlayer(url)
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer.stop()
-        mediaPlayer.detachViews()
-        mediaPlayer.release()
-        libVlc.release()
+    private fun initPlayer(url: String) {
+        player = ExoPlayer.Builder(this).build().also { exo ->
+            playerView.player = exo
+            val mediaItem = MediaItem.fromUri(url)
+            exo.setMediaItem(mediaItem)
+            exo.prepare()
+            exo.playWhenReady = true
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Si quisieras re-crear el player al volver del background, podrías hacerlo acá.
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Liberar el player para evitar fugas
+        playerView.player = null
+        player?.release()
+        player = null
     }
 }
