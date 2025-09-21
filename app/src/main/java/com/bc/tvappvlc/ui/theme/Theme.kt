@@ -1,34 +1,60 @@
 package com.bc.tvappvlc.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.bc.tvappvlc.ui.InterFontFamily
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
-private val DarkColors = darkColorScheme(
-    primary = Color(0xFF00D1FF),
-    onPrimary = Color(0xFF000000),
-    background = Color(0xFF000000),
-    onBackground = Color(0xFFFFFFFF),
-    surface = Color(0xFF111111),
-    onSurface = Color(0xFFFFFFFF),
-    secondary = Color(0xFF9AA0A6),
-    onSecondary = Color(0xFFFFFFFF)
+// 🎨 Paleta de colores claros
+private val LightColors = lightColorScheme(
+    primary = Color(0xFF00BCD4),
+    secondary = Color(0xFF03DAC6),
+    background = Color(0xFFFFFFFF),
+    surface = Color(0xFFF5F5F5),
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black
 )
 
-private val AppTypography = Typography(
-    // aplica Inter a todo por defecto
-    bodyLarge = androidx.compose.ui.text.TextStyle(fontFamily = InterFontFamily),
-    titleLarge = androidx.compose.ui.text.TextStyle(fontFamily = InterFontFamily),
-    labelSmall = androidx.compose.ui.text.TextStyle(fontFamily = InterFontFamily)
+// 🎨 Paleta de colores oscuros
+private val DarkColors = darkColorScheme(
+    primary = Color(0xFF00BCD4),
+    secondary = Color(0xFF03DAC6),
+    background = Color(0xFF121212),
+    surface = Color(0xFF1E1E1E),
+    onPrimary = Color.Black,
+    onSecondary = Color.Black,
+    onBackground = Color.White,
+    onSurface = Color.White
+)
+
+// 🖌️ Tipografía base
+private val AppTypography = androidx.compose.material3.Typography(
+    bodyLarge = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+    titleLarge = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    )
 )
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
+fun TVAppVLCTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val colors = if (darkTheme) DarkColors else LightColors
+
     MaterialTheme(
-        colorScheme = DarkColors,
+        colorScheme = colors,
         typography = AppTypography,
         content = content
     )
