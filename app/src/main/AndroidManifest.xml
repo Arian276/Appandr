@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- Permisos de red para cargar imágenes y reproducir streams -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.bc.tvappvlc">
 
     <application
-        android:label="BarrileteTV"
+        android:allowBackup="true"
+        android:label="TV App VLC"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/Theme.TVAppVLC"
-        android:usesCleartextTraffic="true">
-
-        <!-- Activity principal: HomeScreen (RecyclerView con la grilla) -->
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.App">
         <activity
-            android:name="com.bc.tvappvlc.ui.HomeScreen"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Reproductor -->
-        <activity
-            android:name="com.bc.tvappvlc.PlayerActivity"
-            android:exported="false" />
     </application>
+
 </manifest>
