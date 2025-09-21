@@ -1,24 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="space_sm">4dp</dimen>
+    <dimen name="space_md">8dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
 
-    <!-- Espaciados -->
-    <dimen name="padding_small">8dp</dimen>
-    <dimen name="padding_medium">12dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
-
-    <!-- Radios / redondeos -->
-    <dimen name="bc_radius">12dp</dimen>
-    <dimen name="radius_sm">8dp</dimen>
-    <dimen name="radius_md">12dp</dimen>
+    <dimen name="radius_sm">4dp</dimen>
+    <dimen name="radius_md">8dp</dimen>
     <dimen name="radius_lg">16dp</dimen>
-
-    <!-- Tipografías -->
-    <dimen name="text_small">12sp</dimen>
-    <dimen name="text_medium">14sp</dimen>
-    <dimen name="text_large">16sp</dimen>
-    <dimen name="text_title">18sp</dimen>
-
-    <!-- Para chips/badges -->
-    <dimen name="chip_padding">6dp</dimen>
-
 </resources>
