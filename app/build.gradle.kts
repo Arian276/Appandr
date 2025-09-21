@@ -34,11 +34,10 @@ android {
     kotlinOptions { jvmTarget = "17" }
 
     buildFeatures {
-        compose = true           // Compose UI
-        viewBinding = true       // Para ActivityPlayerBinding del player
+        compose = true
+        viewBinding = true
     }
     composeOptions {
-        // Compose Compiler 1.5.14 requiere Kotlin 1.9.24 (ya fijado arriba)
         kotlinCompilerExtensionVersion = "1.5.14"
     }
 
@@ -50,7 +49,7 @@ android {
 }
 
 dependencies {
-    // Compose (BOM mantiene versiones alineadas)
+    // Compose
     implementation(platform("androidx.compose:compose-bom:2024.09.00"))
     implementation("androidx.activity:activity-compose:1.9.2")
     implementation("androidx.compose.ui:ui")
@@ -58,13 +57,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // Material Components (necesario para Theme.Material3.* en XML)
+    // Material Components (para temas XML)
     implementation("com.google.android.material:material:1.12.0")
 
     // Imágenes
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Reproductor Media3 (ExoPlayer). Si usás VLC, podés quitar estas líneas.
+    // Media3 (ExoPlayer)
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
 }
