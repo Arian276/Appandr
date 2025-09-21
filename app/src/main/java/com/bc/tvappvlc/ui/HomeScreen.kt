@@ -1,64 +1,62 @@
 package com.bc.tvappvlc.ui
 
-import android.content.Intent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
-import com.bc.tvappvlc.PlayerActivity
+import android.content.res.AssetManager
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bc.tvappvlc.R
 import com.bc.tvappvlc.model.Channel
+import org.json.JSONArray
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-@Composable
-fun HomeScreen(channels: List<Channel>) {
-    val context = LocalContext.current
+class HomeScreen : AppCompatActivity() {
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        items(channels) { channel ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable {
-                        val intent = Intent(context, PlayerActivity::class.java).apply {
-                            // ✅ corregido: usamos PlayerActivity.EXTRA_URL
-                            putExtra(PlayerActivity.EXTRA_URL, channel.url)
-                        }
-                        context.startActivity(intent)
-                    },
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column {
-                    Image(
-                        painter = rememberAsyncImagePainter(channel.logo),
-                        contentDescription = channel.name,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = channel.name,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_TVAppVLC) // asegúrate que existe
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main) // si tenés un layout principal; si no, crea uno simple con un RecyclerView con id rv
+
+        // Si no tenés activity_main.xml, podés crear uno con solo un RecyclerView:
+        // <androidx.recyclerview.widget.RecyclerView
+        //     android:id="@+id/rv"
+        //     android:layout_width="match_parent"
+        //     android:layout_height="match_parent"
+        //     android:padding="8dp"
+        //     android:clipToPadding="false"/>
+
+        val rv = findViewById<RecyclerView>(R.id.rv)
+        rv.layoutManager = GridLayoutManager(this, 2)
+        rv.setHasFixedSize(true)
+
+        val channels = readChannelsFromAssets(assets)
+        rv.adapter = ChannelAdapter(this, channels)
+    }
+
+    private fun readChannelsFromAssets(am: AssetManager): List<Channel> {
+        val result = mutableListOf<Channel>()
+        val sb = StringBuilder()
+        am.open("channels.json").use { input ->
+            BufferedReader(InputStreamReader(input)).useLines { lines ->
+                lines.forEach { sb.append(it) }
             }
         }
+        val arr = JSONArray(sb.toString())
+        for (i in 0 until arr.length()) {
+            val o = arr.getJSONObject(i)
+            result.add(
+                Channel(
+                    name = o.optString("name"),
+                    logo = o.optString("logo"),
+                    url = o.optString("url"),
+                    description = o.optString("description"),
+                    quality = o.optString("quality", "1080p"),
+                    category = o.optString("category", ""),
+                    viewers = o.optInt("viewers", 0)
+                )
+            )
+        }
+        return result
     }
 }
