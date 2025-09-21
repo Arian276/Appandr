@@ -1,10 +1,8 @@
 package com.bc.tvappvlc.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,16 +14,35 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val t = ThemeTokens.tokens
-    Surface(
-        shape = RoundedCornerShape(t.shape.chipRadiusDp.dp),
-        color = MaterialTheme.colorScheme.primary,
-        modifier = modifier.clickable(onClick = onClick)
+    Button(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            style = ThemeTokens.bodyLarge
+        )
+    }
+}
+
+@Composable
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.secondary
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+    ) {
+        Text(
+            text = text,
+            style = ThemeTokens.labelSmall
         )
     }
 }
